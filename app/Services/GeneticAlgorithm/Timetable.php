@@ -7,7 +7,7 @@ use App\Models\Day;
 class Timetable
 {
     /**
-     * Rooms indexed by their IDs
+     * Rooms indexed by their IDs githubb
      *
      * @var array
      */
