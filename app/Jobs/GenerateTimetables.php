@@ -43,7 +43,12 @@ class GenerateTimetables implements ShouldQueue
             $timetableGA->run();
             Log::info('Timetable Generated');
         } catch (\Throwable $th) {
-            Log::error("Error while generating timetable " . $th->getMessage(), ['trace' => $th->getTrace()]);
-        }
+            print $th->getMessage();
+           Log::error('Error in GenerateTimetables job: ' . $th->getMessage(), [
+           'file' => $th->getFile(),
+           'line' => $th->getLine(),
+           'trace' => $th->getTraceAsString() ]);
+           
+        } throw $th;
     }
 }

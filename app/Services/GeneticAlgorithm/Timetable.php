@@ -3,6 +3,7 @@
 namespace App\Services\GeneticAlgorithm;
 
 use App\Models\Day;
+use Illuminate\Support\Facades\DB;
 
 class Timetable
 {
@@ -62,6 +63,8 @@ class Timetable
      */
     public $maxContinuousSlots;
 
+    private $roomsByType = []; // Rooms organized by type
+
     /**
      * Create a new instance of this class
      */
@@ -75,6 +78,9 @@ class Timetable
         $this->numClasses = 0;
         $this->maxContinuousSlots = $maxContinuousSlots;
     }
+
+
+       
 
     /**
      * Get the groups
@@ -123,8 +129,38 @@ class Timetable
      */
     public function addRoom($roomId)
     {
-        $this->rooms[$roomId] = new Room($roomId);
+        // $this->rooms[$roomId] = new Room($roomId);
+
+         $room = new Room($roomId);
+         $this->rooms[$roomId] = $room;
+
+         // Organize rooms by type
+         if (!isset($this->roomsByType[$room->getRoomType()]))
+         {
+             $this->roomsByType[$room->getRoomType()] = [];
+         }
+         $this->roomsByType[$room->getRoomType()][] = $room;
     }
+
+     // Get random room of specific type
+     public function getRandomRoomByType($roomType)
+     {
+        if (isset($this->roomsByType[$roomType]) && !empty($this->roomsByType[$roomType]))
+        {
+            $typeRooms = $this->roomsByType[$roomType];
+            return $typeRooms[array_rand($typeRooms)];
+        }
+     return null;
+     }
+
+     // Modified version to get appropriate room for a module
+     public function getRandomRoomForModule($moduleId)
+     {
+        $module = $this->getModule($moduleId);
+        $requiredType = $module->getRequiredRoomType();
+
+        return $this->getRandomRoomByType($requiredType) ?? $this->getRandomRoom();
+     }
 
     /**
      * Add a professor
@@ -408,6 +444,13 @@ class Timetable
             $professor = $this->getProfessor($classA->getProfessorId());
             $timeslot = $this->getTimeslot($classA->getTimeslotId());
             $module = $this->getModule($classA->getModuleId());
+            $room = $this->getRoom($classA->getRoomId());
+            $module = $this->getModule($classA->getModuleId());
+
+             // Check if room type matches course requirements
+             if ($room->getRoomType() !== $module->getRequiredRoomType()) {
+             $clashes += 10; // Higher penalty for wrong room type
+             }
 
             if ($roomCapacity < $groupSize) {
                 $clashes++;

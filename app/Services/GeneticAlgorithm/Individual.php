@@ -42,8 +42,13 @@ class Individual
                         $newChromosome[$chromosomeIndex] = $timeslotId;
                         $chromosomeIndex++;
 
-                        // Add random room
-                        $roomId = $timetable->getRandomRoom()->getId();
+                        // // Add random room
+                        // $roomId = $timetable->getRandomRoom()->getId();
+                        // $newChromosome[$chromosomeIndex] = $roomId;
+                        // $chromosomeIndex++;
+
+                        // Add appropriate room based on module type
+                        $roomId = $timetable->getRandomRoomForModule($moduleId)->getId();
                         $newChromosome[$chromosomeIndex] = $roomId;
                         $chromosomeIndex++;
 

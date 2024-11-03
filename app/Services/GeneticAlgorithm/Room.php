@@ -20,15 +20,31 @@ class Room
     private $model;
 
     /**
+     * Type of room from databse
+     * @var string
+     */
+    private $roomType;
+
+    /**
      * Create a new room
      *
      * @param int $roomId ID of room
      */
+    
     public function __construct($roomId)
     {
         $this->roomId = $roomId;
         $this->model = RoomModel::find($roomId);
+        $this->roomType = $this->model->room_type;
     }
+
+    /**
+     * Get room type
+     */
+
+     public function getRoomType() {
+        return $this->roomType;
+     }
 
     /**
      * Get the Id of the room

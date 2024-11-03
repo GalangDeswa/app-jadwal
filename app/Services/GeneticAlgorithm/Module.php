@@ -14,6 +14,12 @@ class Module
     private $moduleId;
 
     /**
+     * Course type
+     * @var string
+     */
+    private $courseType;
+
+    /**
      * Module's code
      *
      * @var string
@@ -46,6 +52,7 @@ class Module
         $this->moduleModel = Course::find($moduleId);
         $this->professorIds = $professorIds;
         $this->allocatedSlots = 0;
+        $this->courseType = $this->moduleModel->course_type;
     }
 
     /**
@@ -124,4 +131,8 @@ class Module
         $pos = rand(0, count($this->professorIds) - 1);
         return $this->professorIds[$pos];
     }
+
+     public function getRequiredRoomType() {
+     return $this->courseType; // Return the required room type
+     }
 }
