@@ -7,7 +7,7 @@
                     <span aria-hidden="true">x</span>
                 </button>
 
-                <h4>Tambah dosen</h4>
+                <h4 class="modal-heading">Tambah dosen</h4>
             </div>
 
             <form class="form" method="POST" action="" id="resource-form">
@@ -76,7 +76,7 @@
                             </div>
 
                             <div class="col-lg-5 col-md-5 col-sm-5">
-                                <button type="submit" class="btn btn-primary btn-block">Tambah dosen</button>
+                                <button type="submit" class="submit-btn btn btn-primary btn-block">Tambah dosen</button>
                             </div>
                         </div>
                     </div>

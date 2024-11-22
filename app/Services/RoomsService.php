@@ -19,4 +19,40 @@ class RoomsService extends AbstractService
      * @var bool
      */
     protected $showWithRelations = true;
+
+
+     public function storev2($data = [])
+    {
+        $room = Room::create([
+            'name' => $data['name'],
+            'capacity' => $data['capacity'],
+            'room_type' => $data['room_type'],
+        ]);
+
+        if (!$room) {
+            return null;
+        }
+
+        return $room;
+    }
+
+
+     public function updatev2($id, $data = [])
+    {
+        $room = Room::find($id);
+
+        if (!$room) {
+            return null;
+        }
+
+        $room->update([
+             'name' => $data['name'],
+             'capacity' => $data['capacity'],
+             'room_type' => $data['room_type'],
+        ]);
+
+
+
+        return $room;
+    }
 }

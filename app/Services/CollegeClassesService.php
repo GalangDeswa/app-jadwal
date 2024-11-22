@@ -54,8 +54,13 @@ class CollegeClassesService extends AbstractService
             return null;
         }
 
-        $class->unavailable_rooms()->sync($data['unavailable_rooms']);
-        $class->courses()->sync($data['courses']);
+        if (isset($data['unavailable_rooms']) && !empty($data['unavailable_rooms'])){
+            $class->unavailable_rooms()->sync($data['unavailable_rooms']);
+        }
+
+           //$class->unavailable_rooms()->sync($data['unavailable_rooms']);
+           $class->courses()->sync($data['courses']);
+        
 
         return $class;
     }

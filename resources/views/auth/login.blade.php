@@ -64,6 +64,9 @@
                                             <input type="submit" name="submit" value="SIGN IN"
                                                 class="btn btn-lg btn-block btn-custom">
                                         </div>
+                                        <div class="form-group">
+                                            <a href="/register" class="btn btn-lg btn-block btn-primary">Register</a>
+                                        </div>
 
                                         <div class="form-group">
                                             <a href="/request_reset" class="btn btn-lg btn-block btn-primary">Lupa

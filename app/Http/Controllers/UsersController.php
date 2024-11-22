@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use DB;
 use Auth;
-use Hash;
+
 use Carbon\Carbon;
 use App\Services\Helpers;
 use Illuminate\Http\Request;
@@ -13,6 +13,7 @@ use App\Events\PasswordResetRequested;
 
 use App\Models\User;
 use App\Models\SecurityQuestion;
+use Illuminate\Support\Facades\Hash;
 
 class UsersController extends Controller
 {
@@ -28,6 +29,49 @@ class UsersController extends Controller
         return view('auth.login');
     }
 
+    public function showRegisterPage()
+    {
+        return view('auth.register');
+    }
+
+    public function store(Request $request)
+    {
+
+        $customMessages = [
+        'name.required' => 'Kolom nama harus diisi.',
+        //'name.string' => 'Kolom nama harus berupa string.',
+        'name.max' => 'Maximum karakter nama adalah 191.',
+        'email.required' => 'Kolom email harus diisi.',
+        'email.email' => 'Format email tidak valid.',
+        'email.max' => 'Maximum karakter 191.',
+        'email.unique' => 'Email sudah terdaftar.',
+        'password.required' => 'Kolom pasword harus diisi.',
+       // 'password.string' => 'The password must be a string.',
+        'password.min' => 'Minimum karakter password adalah 8.',
+        'password.confirmed' => 'Password tidak sesuai.',
+        ];
+
+        // Validate the request data
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'password_confirmation' => 'required|string|min:8',
+            'lvl'=>'required',
+        ],$customMessages);
+
+        // Create the user
+        $user = User::create([
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'password' => Hash::make($validatedData['password']),
+            'lvl' => $validatedData['lvl'],
+        ]);
+
+        // Return a response
+        return redirect('/login');
+    }
+
     /**
      * Log in a user
      *
@@ -36,12 +80,13 @@ class UsersController extends Controller
     public function loginUser(Request $request)
     {
         $rules = [
+            'email' => 'required',
             'password' => 'required'
         ];
 
         $this->validate($request, $rules);
 
-        $user = User::first();
+         $user = User::where('email', $request->email)->first();
 
         if (!$user) {
             return redirect()->back()->withErrors(['No user account has been set up yet']);
@@ -214,6 +259,7 @@ class UsersController extends Controller
     {
         $rules = [
             'name' => 'required',
+           // 'email' => 'required|email|unique:users,email,' . Auth::user()->id,
             'security_question_id' => 'required',
             'security_question_answer' => 'required'
         ];

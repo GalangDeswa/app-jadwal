@@ -42,16 +42,14 @@ class TimetableGA
         $maxContinuousSlots = 1;
         $timetable = new Timetable($maxContinuousSlots);
 
-        // Set up rooms for the GA data using rooms data from DB--------------------------------------------
+        // Set up rooms for the GA data using rooms data from DB
         $rooms = RoomModel::all();
 
         foreach ($rooms as $room) {
             $timetable->addRoom($room->id);
         }
 
-        // Set up rooms for the GA data using rooms data from DB--------------------------------------------
-
-        // Set up timeslots--------------------------------------------------------------------------------
+        // Set up timeslots
         $days = $this->timetable->days;
         $timeslots = TimeslotModel::all();
         $count = 1;
@@ -64,9 +62,7 @@ class TimetableGA
             }
         }
 
-       // Set up timeslots--------------------------------------------------------------------------------
-
-        // Set up professors------------------------------------------------------------------------------
+        // Set up professors
         $professors = ProfessorModel::all();
 
         foreach ($professors as $professor) {
@@ -79,9 +75,7 @@ class TimetableGA
             $timetable->addProfessor($professor->id, $unavailableSlotIds);
         }
 
-        // Set up professors------------------------------------------------------------------------------
-
-        // Set up courses--------------------------------------------------------------------------------
+        // Set up courses
         $results = DB::table('courses_classes')
             ->where('academic_period_id', $this->timetable->academic_period_id)
             ->selectRaw('distinct course_id')
@@ -105,9 +99,7 @@ class TimetableGA
             $timetable->addModule($course->id, $professorIds);
         }
 
-        // Set up courses--------------------------------------------------------------------------------
-
-        // Set up class groups---------------------------------------------------------------------------
+        // Set up class groups
         $classes = CollegeClassModel::all();
 
         foreach ($classes as $class) {
@@ -120,8 +112,6 @@ class TimetableGA
 
             $timetable->addGroup($class->id, $courseIds);
         }
-
-        // Set up class groups---------------------------------------------------------------------------
 
 
         return $timetable;
@@ -161,7 +151,7 @@ class TimetableGA
     public function run()
     {
         try {
-            $maxGenerations = 10;
+            $maxGenerations = 15;
 
             $timetable = $this->initializeTimetable();
 
@@ -236,13 +226,7 @@ class TimetableGA
 
             event(new TimetablesGenerated($this->timetable));
         } catch (\Throwable $th) {
-            print "-------------error----------------";
-            print "\n";
-            print $th->getMessage();
-            print "\n";
-            print $th->getLine();
-            print "\n";
-            print "-------------error----------------";
+            print $th->getMessage()." ".$th->getLine()." ".$th->getFile();
             Log::error("Error while generating timetable " . $th->getMessage(), ['trace' => $th->getTrace()]);
         }
     }

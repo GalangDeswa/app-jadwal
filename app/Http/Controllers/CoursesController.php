@@ -60,10 +60,17 @@ class CoursesController extends Controller
         $rules = [
             'name' => 'required',
             'course_code' => 'required|unique:courses,course_code',
+            'credit' => 'required',
+            'course_type' => 'required|string|in:reguler,lab-kes,lab-kom,lab-far,magang,KKN', // Validate course type
         ];
 
         $messages = [
-            'name.unique' => 'This course already exists',
+            'name.unique' => 'Mata kuliah dengan nama ini sudah ada.',
+            'name.required' => 'Kolom mata kuliah harus diisi.',
+            'course_code.unique' => 'Kode mata kuliah ini sudah digunakan.',
+            'course_code.required' => 'Kolom Kode mata kuliah harus diisi.',
+            'credit.required' => 'Kolom kredit harus diisi.',
+            'course_type.required' => 'Kolom jenis mata kuliah harus diisi.',
         ];
 
         $this->validate($request, $rules, $messages);

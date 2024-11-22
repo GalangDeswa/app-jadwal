@@ -79,7 +79,7 @@
                             </div>
 
                             <div class="col-lg-5 col-md-5 col-sm-5">
-                                <button type="submit" class="btn btn-primary btn-block">Tambah</button>
+                                <button type="submit" class="btn submit-btn btn-primary btn-block">Tambah</button>
                             </div>
                         </div>
                     </div>

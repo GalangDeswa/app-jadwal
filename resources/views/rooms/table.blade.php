@@ -6,6 +6,7 @@
                 <tr class="table-head">
                     <th style="width: 50%">Ruang</th>
                     <th style="width: 40%">Kapasitas</th>
+                    <th style="width: 40%">Tipe ruang</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -15,6 +16,7 @@
                 <tr>
                     <td>{{ $room->name }}</td>
                     <td>{{ $room->capacity }}</td>
+                    <td>{{ $room->room_type }}</td>
                     <td>
                         <button class="btn btn-primary btn-sm resource-update-btn" data-id="{{ $room->id }}"><i
                                 class="fa fa-pencil"></i></button>
@@ -32,7 +34,7 @@
         </div>
         @else
         <div class="no-data text-center">
-            <p>No matching data was found</p>
+            <p>Tidak ada data</p>
         </div>
         @endif
     </div>

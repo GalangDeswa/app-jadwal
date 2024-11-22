@@ -65,6 +65,19 @@ class Module
         return $this->moduleId;
     }
 
+     public function getCredit()
+     {
+     return $this->moduleModel->credit;
+     }
+
+     public function getCreditasString()
+
+     {
+        $credit = $this->moduleModel->credit;
+        $str = strval($credit);
+        return $str;
+     }
+
     /**
      * Get the code of the module
      *

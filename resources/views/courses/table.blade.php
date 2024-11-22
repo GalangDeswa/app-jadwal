@@ -7,6 +7,8 @@
                     <th style="width: 30%">Kode Matkul</th>
                     <th style="width: 30%">Mata kuliah</th>
                     <th style="width: 30%">Dosen</th>
+                    <th style="width: 30%">SKS</th>
+                    <th style="width: 30%">Tipe</th>
                     <th style="width: 10%">Aksi</th>
                 </tr>
             </thead>
@@ -23,6 +25,8 @@
                             @endforeach
                         </ul>
                     </td>
+                    <td>{{ $course->credit }}</td>
+                    <td>{{ $course->course_type }}</td>
                     <td>
                         <button class="btn btn-primary btn-sm resource-update-btn" data-id="{{ $course->id }}"><i
                                 class="fa fa-pencil"></i></button>
@@ -40,7 +44,7 @@
         </div>
         @else
         <div class="no-data text-center">
-            <p>No matching data was found</p>
+            <p>Tidak ada data</p>
         </div>
         @endif
     </div>

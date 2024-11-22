@@ -34,7 +34,9 @@ class CoursesService extends AbstractService
     {
         $course = Course::create([
             'name' => $data['name'],
-            'course_code' => $data['course_code']
+            'course_code' => $data['course_code'],
+            'course_type' => $data['course_type'],
+            'credit' => $data['credit'],
         ]);
 
         if (!$course) {
@@ -91,7 +93,9 @@ class CoursesService extends AbstractService
 
         $course->update([
             'name' => $data['name'],
-            'course_code' => $data['course_code']
+            'course_code' => $data['course_code'],
+            'course_type' => $data['course_type'],
+            'credit' => $data['credit'],
         ]);
 
         if (!isset($data['professor_ids'])) {

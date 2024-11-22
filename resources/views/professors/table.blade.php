@@ -56,7 +56,7 @@
         </div>
         @else
         <div class="no-data text-center">
-            <p>No matching data was found</p>
+            <p>Tidak ada data</p>
         </div>
         @endif
     </div>

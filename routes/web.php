@@ -11,12 +11,17 @@
 |
 */
 
+use App\Http\Controllers\DashboardController;
+
 Route::get('/', function() {
     return redirect('/dashboard');
 });
 
 Route::get('/dashboard', 'DashboardController@index');
+Route::get('/search', 'DashboardController@search')->name('search');
+Route::get('/searchv2', 'DashboardController@searchv2')->name('searchv2');
 
+Route::get('/dashboardsiswa', [DashboardController::class, 'indexv2'])->name('timetables.index');
 // Routes for rooms module
 Route::resource('rooms', 'RoomsController');
 
@@ -36,6 +41,7 @@ Route::resource('classes', 'CollegeClassesController');
 Route::post('timetables', 'TimetablesController@store');
 Route::get('timetables', 'TimetablesController@index');
 Route::get('timetables/view/{id}', 'TimetablesController@view');
+Route::get('timetables/viewv2/{id}', 'TimetablesController@viewv2');
 
 // User account activation routes
 Route::get('/users/activate', 'UsersController@showActivationPage');
@@ -45,6 +51,8 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 // Other account related routes
 Route::get('/login', 'UsersController@showLoginPage');
+Route::get('/register', 'UsersController@showRegisterPage')->name('register');
+Route::post('/registerpost', 'UsersController@store')->name('registerpost');
 Route::post('/login', 'UsersController@loginUser');
 Route::get('/request_reset', 'UsersController@showPasswordRequestPage');
 Route::post('/request_reset', 'UsersController@requestPassword');

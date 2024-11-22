@@ -7,7 +7,8 @@
                     <span aria-hidden="true">x</span>
                 </button>
 
-                <h4>Tambah mata kuliah</h4>
+                <h4 class="modal-heading">Tambah scsccs</h4>
+                <h4> mata kuliah</h4>
             </div>
 
             <form class="form" method="POST" action="" id="resource-form">
@@ -44,6 +45,26 @@
                                     </select>
                                 </div>
                             </div>
+
+                            <div class="form-group">
+                                <label>SKS</label>
+                                <input type="text" name="credit" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Tipe mata kuliah</label>
+
+                                <div class="select2-wrapper">
+                                    <select id="type-select" name="course_type" class="form-control select2">
+                                        <option value="">Pilih Tipe Mata Kuliah</option>
+                                        <option value="reguler">Reguler</option>
+                                        <option value="lab-kes">Praktikum ilmu kesehatan</option>
+                                        <option value="lab-kom">Praktikum komputer</option>
+                                        <option value="lab-far">Praktikum farmasi</option>
+                                        <option value="magang">Magang</option>
+                                        <option value="KKN">Kuliah kerja nyata</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -57,7 +78,8 @@
                             </div>
 
                             <div class="col-lg-5 col-md-5 col-sm-5">
-                                <button type="submit" class="btn btn-primary btn-block">Tambah mata kuliah</button>
+                                <button type="submit" class="submit-btn btn btn-primary btn-block">Tambah mata
+                                    kuliah</button>
                             </div>
                         </div>
                     </div>

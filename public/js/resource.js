@@ -61,9 +61,21 @@ Resource.prototype.init = function() {
 Resource.prototype.initializeAddModal = function() {
     var $modal = $('#resource-modal');
 
+
+     var translationMap = {
+        'Course': 'Mata Kuliah',
+        'Lecture Room': 'Ruang kelas',
+        'Professor': 'Dosen',
+        'class': 'Prodi',
+        // Add more mappings as needed
+    };
+
+     // Get the display name from the translation map, defaulting to the original name if not found
+    var displayName = translationMap[this.resourceName] || this.resourceName;
+
     // Set up modal title and button label
-    $modal.find('.modal-heading').html('Add New ' +  this.resourceName);
-    $modal.find('.submit-btn').html('Add ' + this.resourceName);
+    $modal.find('.modal-heading').html('Tambah ' +  displayName);
+    $modal.find('.submit-btn').html('Tambah ' + displayName);
 
     // Set up appropriate HTTP Method for Laravel HTTP spoofing
     $modal.find('input[name=_method]').val('POST');
@@ -82,6 +94,17 @@ Resource.prototype.initializeUpdateModal = function(resourceId) {
     var url = this.baseUrl;
     var self = this;
 
+      var translationMap = {
+        'Course': 'Mata Kuliah',
+        'Lecture Room': 'Ruang kelas',
+        'Professor': 'Dosen',
+        'class': 'Prodi',
+        // Add more mappings as needed
+    };
+
+     // Get the display name from the translation map, defaulting to the original name if not found
+    var displayName = translationMap[this.resourceName] || this.resourceName;
+
     $.ajax({
         type: 'get',
         url: url + '/' + resourceId,
@@ -91,8 +114,8 @@ Resource.prototype.initializeUpdateModal = function(resourceId) {
             self.prepareForUpdate(resource);
 
             // Set up modal title and button label
-            $modal.find('.modal-heading').html('Update ' + self.resourceName);
-            $modal.find('.submit-btn').html('Save');
+            $modal.find('.modal-heading').html('Update ' + displayName);
+            $modal.find('.submit-btn').html('Update');
 
             // Set up appropriate HTTP Method for Laravel HTTP spoofing
             $modal.find('input[name=_method]').val('PUT');
@@ -111,8 +134,20 @@ Resource.prototype.initializeUpdateModal = function(resourceId) {
  * @param {int} resourceId The resource Id
  */
 Resource.prototype.initializeDeleteModal = function(resourceId) {
-    App.setDeleteForm(this.baseUrl + '/' + resourceId, 'Delete ' + this.resourceName);
-    App.showConfirmDialog("Do you want to delete this " + this.resourceName.toLowerCase() + "?");
+     var translationMap = {
+        'Course': 'Mata Kuliah',
+        'Lecture Room': 'Ruang kelas',
+        'Professor': 'Dosen',
+        'class': 'Prodi',
+        // Add more mappings as needed
+    };
+
+     // Get the display name from the translation map, defaulting to the original name if not found
+    var displayName = translationMap[this.resourceName] || this.resourceName;
+    //App.setDeleteForm(this.baseUrl + '/' + resourceId, 'Delete ' + displayName);
+     App.setDeleteForm(this.baseUrl + '/' + resourceId, 'Konfirmasi hapus data' );
+    // App.showConfirmDialog("Hapus data " + this.resourceName.toLowerCase() + "?");
+     App.showConfirmDialog("Hapus data ini?");
 };
 
 /**

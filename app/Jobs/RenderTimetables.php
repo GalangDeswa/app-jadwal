@@ -8,6 +8,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use App\Services\GeneticAlgorithm\TimetableRenderer;
+use Illuminate\Support\Facades\Log;
 
 class RenderTimetables implements ShouldQueue
 {
@@ -32,7 +33,19 @@ class RenderTimetables implements ShouldQueue
      */
     public function handle()
     {
-        $renderer = new TimetableRenderer($this->timetable);
-        $renderer->render();
-    }
+        try{
+            Log::info('Generating timetable render');
+             $renderer = new TimetableRenderer($this->timetable);
+             $renderer->render();
+
+        }catch(\Throwable $th){
+              Log::error('Error in Generating timetable render: ' . $th->getMessage(), [
+              'file' => $th->getFile(),
+              'line' => $th->getLine(),
+              'trace' => $th->getTraceAsString() ]);
+
+              }
+        }
+       
+    
 }

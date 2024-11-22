@@ -7,7 +7,7 @@
                     <span aria-hidden="true">x</span>
                 </button>
 
-                <h4>Tambah ruang kelas</h4>
+                <h4 class="modal-heading">Tambah ruang kelas</h4>
             </div>
 
             <form class="form" method="POST" action="" id="resource-form">
@@ -30,6 +30,21 @@
                                 <label>Kapasitas</label>
                                 <input type="number" name="capacity" class="form-control">
                             </div>
+                            <div class="form-group">
+                                <label>Tipe ruang</label>
+
+                                <div class="select2-wrapper">
+                                    <select id="roomtype-select" name="room_type" class="form-control select2">
+                                        <option value="">Pilih Tipe ruang</option>
+                                        <option value="reguler">Reguler</option>
+                                        <option value="lab-kes">Lab Praktikum ilmu kesehatan</option>
+                                        <option value="lab-kom">Lab Praktikum komputer</option>
+                                        <option value="lab-far">Lab Praktikum farmasi</option>
+                                        {{-- <option value="magang">Magang</option>
+                                        <option value="KKN">Kuliah kerja nyata</option> --}}
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -43,7 +58,7 @@
                             </div>
 
                             <div class="col-lg-5 col-md-5 col-sm-5">
-                                <button type="submit" class="btn btn-primary btn-block">Tambah</button>
+                                <button type="submit" class="submit-btn btn btn-primary btn-block">Tambah</button>
                             </div>
                         </div>
                     </div>

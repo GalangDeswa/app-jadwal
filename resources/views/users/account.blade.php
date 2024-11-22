@@ -87,7 +87,8 @@ Akun
 
                     <div class="form-group">
                         <label>Jenis akun</label>
-                        <input type="text" class="form-control" placeholder="jenis akun" name="name" value="Admin">
+                        <input type="text" class="form-control" placeholder="jenis akun" name="name"
+                            value="{{ $user->name }}">
                     </div>
 
                     {{-- <div class="form-group">

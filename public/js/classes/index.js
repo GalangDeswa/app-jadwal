@@ -79,7 +79,9 @@ CollegeClass.prototype.clearForm = function() {
 };
 
 CollegeClass.prototype.submitResourceForm = function() {
-    var $form = $('#resource-form');
+
+    try {
+        var $form = $('#resource-form');
     var url = $form.attr('action');
     var form;
 
@@ -117,6 +119,11 @@ CollegeClass.prototype.submitResourceForm = function() {
     };
 
     App.submitForm(form, this.refreshPage, $('#errors-container'), true, true);
+    } catch (error) {
+        alert(error);
+        document.write("Hello, World!");
+    }
+    
 };
 
 window.addEventListener('load', function () {

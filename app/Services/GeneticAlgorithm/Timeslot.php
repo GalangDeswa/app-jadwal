@@ -32,6 +32,8 @@ class Timeslot
      */
     private $nextSlot;
 
+    private $credit;
+    private $rank;
 
     /**
      * Create a timeslot
@@ -52,7 +54,17 @@ class Timeslot
 
         $this->dayModel = DayModel::find($dayId);
         $this->timeslotModel = TimeslotModel::find($timeslotId);
-    }
+        $this->credit = $this->timeslotModel->credit;
+        $this->rank = $this->timeslotModel->rank;
+
+//         echo "dari timeslot php---------------------------------------->"."\n";
+//         echo "Day ID: $dayId, Timeslot ID: $timeslotId\n"."\n";
+//         foreach($matches as $x){
+//             echo "----------matches gabungan------------"."\n";
+//             echo $x;
+//  }
+        }
+      
 
     /**
      * Get ID of timeslot
@@ -63,6 +75,16 @@ class Timeslot
     {
         return $this->timeslotId;
     }
+
+     public function getCredit()
+     {
+      return $this->credit;
+     }
+
+     public function getRank()
+     {
+     return $this->rank;
+     }
 
     /**
      * Get timeslot
@@ -83,7 +105,7 @@ class Timeslot
     {
         return $this->nextSlot;
     }
-
+ 
     public function getDayId()
     {
         return $this->dayModel->id;

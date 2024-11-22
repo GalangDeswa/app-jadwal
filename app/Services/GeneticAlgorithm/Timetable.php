@@ -5,6 +5,67 @@ namespace App\Services\GeneticAlgorithm;
 use App\Models\Day;
 use Illuminate\Support\Facades\DB;
 
+ class timeslotv2{
+    var $id;
+    var $time;
+     public function __construct($id,$time){
+        $this->id = $id;
+         $this->time=$time;
+     }
+
+    
+ }
+
+class Timeslotv3 {
+    private static $timeSlots = [];
+    private static $nextId = 1; // Static variable to simulate auto-incrementing ID
+
+    // Method to add a time slot
+    public static function addTimeSlot($time) {
+        $id = self::$nextId++; // Assign current ID and increment for the next
+        self::$timeSlots[] = new self($id, $time);
+    }
+
+    // Method to get all time slots
+    public static function getAllTimeSlots() {
+        return array_map(function($slot) {
+            return $slot->toArray();
+        }, self::$timeSlots);
+    }
+
+    // Method to convert the object to an array
+    public function toArray() {
+        return [$this->id, $this->time];
+    }
+
+    // Private properties
+    private $id;
+    private $time;
+
+    // Constructor
+    private function __construct($id, $time) {
+        $this->id = $id;
+        $this->time = $time;
+    }
+
+      // Method to get a time slot by ID
+    public static function getTimeSlotById($id) {
+        foreach (self::$timeSlots as $slot) {
+            if ($slot->id === $id) {
+                return $slot->toArray(); // Return the time slot as an array
+            }
+        }
+        return null; // Return null if not found
+    }
+
+    // Method to get all time slot IDs
+    public static function getAllTimeSlotIds() {
+        return array_map(function($slot) {
+            return $slot->id;
+        }, self::$timeSlots);
+    }
+}
+
 class Timetable
 {
     /**
@@ -62,8 +123,9 @@ class Timetable
      * @var int
      */
     public $maxContinuousSlots;
-
-    private $roomsByType = []; // Rooms organized by type
+        // New: Add working hours constraints
+        private $workingHoursStart = 480; // 8:00 AM in minutes
+        private $workingHoursEnd = 1020; // 5:00 PM in minutes
 
     /**
      * Create a new instance of this class
@@ -80,7 +142,78 @@ class Timetable
     }
 
 
-       
+       private $roomsByType = []; // Rooms organized by type
+
+     
+
+       public function findSuitableStartTime($credits) 
+{
+    $duration = $credits * 60; // Convert credits to minutes (1 credit = 1 hour = 60 minutes)
+    $startTime = 480; // 8:00 AM in minutes
+    $endTime = $startTime + $duration;
+    $day = 1; // Start from the first day (Monday)
+
+    while ($endTime > 1020) { // 1020 minutes is 5:00 PM
+        $startTime = $this->getNextDay($startTime);
+        $day++; // Move to the next day
+        if ($day > 6) {
+            // If we exceed 6 working days, reset to the first day
+            $day = 1;
+        }
+        $endTime = $startTime + $duration;
+    }
+
+    //  echo "starttime--------------------------"."\n";
+    //  echo $startTime."\n";
+    //   echo "endtime--------------------------"."\n";
+    //   echo $endTime."\n";
+    // Calculate the time slot index (60-minute intervals)
+    $timeSlotIndex = ($startTime - 480) / 60; // 480 is 8:00 AM
+    // echo "time and day--------------------------"."\n";
+    // echo "D{$day}T" . ($timeSlotIndex + 1)."\n";
+
+$readableStartTime = $this->convertMinutesToTime($startTime);
+$readableEndTime = $this->convertMinutesToTime($endTime);
+$time = $readableStartTime."-".$readableEndTime;
+$id = 1;
+$idtime = $id++;
+
+// echo 'readable time----------------------->>'."\n";
+// echo $readableStartTime."\n";
+// echo $readableEndTime."\n";
+// echo $time."\n";
+
+    $add = timeslotv3::addTimeSlot($time);
+
+    $allTimeSlots = Timeslotv3::getAllTimeSlots();
+
+    // Output the array of time slots
+  //  print_r($allTimeSlots);
+
+    //return $this->timeslots[$timeslotId] = new Timeslot($timeslotId, $next);
+    //return "D{$day}T" . ($timeSlotIndex + 1); // Adding 1 to make it 1-indexed
+}
+
+   private function getNextDay($time) 
+    {
+        return $this->workingHoursStart + (ceil(($time - $this->workingHoursStart) / 1440) * 1440);
+    }
+
+    //  public function getRandomTimeslot()
+    // {
+    //     return $this->possibleStartTimes[array_rand($this->possibleStartTimes)];
+    // }
+
+    private function convertMinutesToTime($minutes)
+{
+    $hours = floor($minutes / 60);
+    $mins = $minutes % 60;
+    
+    // Format hours and minutes to always show two digits
+    return sprintf('%02d:%02d', $hours, $mins);
+}
+
+
 
     /**
      * Get the groups
@@ -437,6 +570,8 @@ class Timetable
     {
         $clashes = 0;
         $days = Day::all();
+         // Create an array to hold classes with their ranks
+         //$classesWithRanks = [];
 
         foreach ($this->classes as $id => $classA) {
             $roomCapacity = $this->getRoom($classA->getRoomId())->getCapacity();
@@ -447,6 +582,45 @@ class Timetable
             $room = $this->getRoom($classA->getRoomId());
             $module = $this->getModule($classA->getModuleId());
 
+             // Add class to the array with its rank
+            //  $classesWithRanks[] = [
+            //  'class' => $classA,
+            //  'rank' => $timeslot->getRank(), // Assume getRank() method exists in Timeslot class
+            //  'credit' => $timeslot->getCredit() // Assume getCredit() method exists in Timeslot class
+            //  ];
+
+             // Sort classes by rank (lower rank first)
+            //  usort($classesWithRanks, function($a, $b) {
+            //  return $a['rank'] <=> $b['rank'];
+            //      });
+
+
+                 // Now check for clashes after sorting by rank
+
+                //  foreach ($classesWithRanks as $entryA){
+                //      $classA = $entryA['class'];
+                //      $timeslotA = $entryA['credit']; // Get the credit for the current timeslot
+                //      $moduleA = $this->getModule($classA->getModuleId());
+                //      $creditsA = $moduleA->getCreditasString(); // Get the credits for the module
+
+                //      // Check if credits match
+                //      if ($creditsA != $timeslotA) {
+                //      $clashes++; // Increment clashes if credits do not match
+                //      }
+
+                //        foreach ($this->classes as $classB){
+                //          if ($classA->getId() != $classB->getId()){
+                //              if (($classA->getRoomId() == $classB->getRoomId()) && ($classA->getTimeslotId() ==
+                //              $classB->getTimeslotId())){
+                //                 $clashes++;
+                //                 break;
+                //              }
+                //          }
+                //        }
+                //  }
+
+
+
              // Check if room type matches course requirements
              if ($room->getRoomType() !== $module->getRequiredRoomType()) {
              $clashes += 10; // Higher penalty for wrong room type
@@ -455,6 +629,13 @@ class Timetable
             if ($roomCapacity < $groupSize) {
                 $clashes++;
             }
+
+            // Check if credits match
+            if ($module->getCreditasString() != $timeslot->getCredit()) {
+           $clashes +=100; // Increment clashes if credits do not match
+            }
+
+            //render belum fix check render timetable
 
             // Check if we don't have any lecturer forced to teach at his occupied time
             if (in_array($timeslot->getId(), $professor->getOccupiedSlots())) {

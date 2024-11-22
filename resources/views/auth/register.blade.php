@@ -8,7 +8,7 @@
                 <div class="panel-heading">Register</div>
 
                 <div class="panel-body">
-                    <form class="form-horizontal" method="POST" action="{{ route('register') }}">
+                    <form class="form-horizontal" method="POST" action="{{ route('registerpost') }}">
                         {{ csrf_field() }}
 
                         <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
@@ -61,6 +61,24 @@
                             <div class="col-md-6">
                                 <input id="password-confirm" type="password" class="form-control"
                                     name="password_confirmation" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group{{ $errors->has('lvl') ? ' has-error' : '' }}">
+                            <label class="col-md-4 control-label">Sebagai</label>
+
+                            <div class="select2-wrapper col-md-6">
+                                <select id="lvl-select" name="lvl" class="form-control select2">
+                                    <option value="">Pilih tipe user</option>
+                                    <option value="mahasiswa">Mahasiswa</option>
+                                    <option value="dosen">Dosen</option>
+
+                                </select>
+                                @if ($errors->has('lvl'))
+                                <span class="help-block">
+                                    <strong>{{ $errors->first('lvl') }}</strong>
+                                </span>
+                                @endif
                             </div>
                         </div>
 

@@ -38,7 +38,19 @@ class Individual
 
                     for ($i = 1; $i <= $module->getSlots($group->getId()); $i++) {
                         // Add random time slot
+                        // echo "----------------------credit course-----------------------"."\n";
+                        // echo $module->getName()."\n";
+                        // echo $module->getCredit()."\n";
+                        $credit = $module->getCredit();
+                        $lol = $timetable->findSuitableStartTime($credit);
+                        $all = Timeslotv3::getAllTimeSlotIds();
                         $timeslotId = $timetable->getRandomTimeslot()->getId();
+                        // echo "timefbekbfhjbfjksehf"."\n";
+                        // echo $timeslotId."\n";
+                        //$timeslotid = DxTx
+                        // echo "timeslot id ------------------------------------>"."\n";
+                        // echo $timeslotId."\n";
+                        // echo "timeslot id ------------------------------------>"."\n";
                         $newChromosome[$chromosomeIndex] = $timeslotId;
                         $chromosomeIndex++;
 

@@ -18,7 +18,9 @@
     <body>
         <div class="container-fluid">
             <div class="row">
+                @if (Auth::check())
                 @include('partials.sidebar')
+                @endif
 
                 @yield('content')
             </div>

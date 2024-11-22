@@ -5,6 +5,34 @@ function Timetable(url, resourceName) {
     Resource.call(this, url, resourceName);
 }
 
+
+
+
+
+ function searchMajor() {
+            const searchTerm = document.getElementById('majorSearch').value.toLowerCase();
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = ''; // Clear previous results
+
+            // Get all major sections
+            const majorSections = document.querySelectorAll('h3.text-center');
+
+            let found = false; // Flag to track if any major is found
+
+            majorSections.forEach(section => {
+                const majorName = section.textContent.toLowerCase();
+                if (majorName.includes(searchTerm)) {
+                    found = true; // Set flag to true if a match is found
+                    const timetable = section.nextElementSibling.outerHTML; // Get the timetable
+                    resultDiv.innerHTML += `<h3>${section.textContent}</h3>${timetable}`; // Display the timetable
+                }
+            });
+
+            if (!found) {
+                resultDiv.innerHTML = '<p>No timetable found for the specified major.</p>';
+            }
+        }
+
 App.extend(Resource, Timetable);
 
 Timetable.prototype.init = function() {
@@ -41,7 +69,7 @@ Timetable.prototype.initializeAddModal = function() {
     Resource.prototype.initializeAddModal.call(this);
 
     // Set up modal title and button label
-    $modal.find('.modal-heading').html('Create New Timetable Set');
+    $modal.find('.modal-heading').html('Buat timetable baru');
     $modal.find('.submit-btn').html('Generate');
 };
 

@@ -6,7 +6,7 @@
                 <tr class="table-head">
                     <td>Nama jadwal</td>
                     <td>Status</td>
-                    <td style="width: 10%">Print</td>
+                    <td style="width: 20%">Actions</td> <!-- Adjusted width for better layout -->
                 </tr>
             </thead>
 
@@ -17,9 +17,14 @@
                     <td>{{ $timetable->status }}</td>
                     <td>
                         @if($timetable->file_url)
-                        <a href="{{ URL::to('/timetables/view/' . $timetable->id) }}"
-                            class="btn btn-sm btn-primary print-btn" data-id="{{ $timetable->id }}"><span
-                                class="fa fa-print"></span> PRINT</a>
+                        <a href="{{ URL::to('/timetables/viewv2/' . $timetable->id) }}"
+                            class="btn btn-sm btn-info view-btn" data-id="{{ $timetable->id }}">
+                            <span class="fa fa-eye"></span> VIEW
+                        </a>
+                        <a href="{{ URL::to('/timetables/print/' . $timetable->id) }}"
+                            class="btn btn-sm btn-primary print-btn" data-id="{{ $timetable->id }}">
+                            <span class="fa fa-print"></span> PRINT
+                        </a>
                         @else
                         N/A
                         @endif

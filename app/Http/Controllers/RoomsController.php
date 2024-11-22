@@ -61,16 +61,18 @@ class RoomsController extends Controller
     {
         $rules = [
             'name' => 'required|unique:rooms,name',
-            'capacity' => 'required|numeric'
+            'capacity' => 'required|numeric',
+            'room_type' => 'required'
         ];
 
         $messages = [
-            'name.unique' => 'This room already exists'
+            'name.unique' => 'This room already exists',
+            'room_type.required'=>'kolom tipe ruang harus diisi'
         ];
 
         $this->validate($request, $rules, $messages);
 
-        $room = $this->service->store($request->all());
+        $room = $this->service->storev2($request->all());
 
         if ($room) {
             return response()->json(['message' => 'Room added'], 200);
@@ -121,7 +123,7 @@ class RoomsController extends Controller
             return response()->json(['error' => 'Room not found'], 404);
         }
 
-        $room = $this->service->update($id, $request->all());
+        $room = $this->service->updatev2($id, $request->all());
 
         return response()->json(['message' => 'Room updated'], 200);
     }

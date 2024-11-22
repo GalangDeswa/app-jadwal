@@ -118,4 +118,62 @@ class TimetablesController extends Controller
             return view('timetables.view', compact('timetableData', 'timetableName'));
         }
     }
+
+
+     public function viewv2($id)
+    {
+        $timetable = Timetable::find($id);
+
+        if (!$timetable) {
+            return redirect('/');
+        } else {
+            $path = $timetable->file_url;
+            $timetableData =  Storage::get($path);
+            $timetableName = $timetable->name;
+            return view('dashboard.show', compact('timetableData', 'timetableName'));
+        }
+    }
+
+
+//     public function view($id)
+// {
+//     $timetable = Timetable::find($id);
+
+//     if (!$timetable) {
+//         return redirect('/');
+//     } else {
+//         $path = $timetable->file_url; // Get the file path
+//         $timetableData = Storage::get($path); // Read the HTML content
+//         $timetableName = $timetable->name;
+
+//         // Prepend CSS styles to the HTML content
+//         $cssLinks = '
+//         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+//         <style>
+//             body {
+//                 background-color: #f8f9fa;
+//                 font-family: Arial, sans-serif;
+//             }
+//             /* Add any additional custom styles here */
+//             table {
+//                 width: 100%;
+//                 border-collapse: collapse;
+//             }
+//             th, td {
+//                 padding: 10px;
+//                 text-align: left;
+//                 border: 1px solid #ddd;
+//             }
+//             th {
+//                 background-color: #007bff;
+//                 color: white;
+//             }
+//         </style>';
+
+//         // Combine CSS with the timetable data
+//         $fullHtml = $cssLinks . $timetableData;
+
+//         return view('dashboard.show', compact('fullHtml', 'timetableName'));
+//     }
+// }
 }
