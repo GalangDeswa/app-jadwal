@@ -19,6 +19,8 @@ class Professor
      */
     private $professorModel;
 
+    private $occupiedSlots;
+
     /**
      * Create a new professor
      *

@@ -130,7 +130,8 @@ class TimetablesController extends Controller
             $path = $timetable->file_url;
             $timetableData =  Storage::get($path);
             $timetableName = $timetable->name;
-            return view('dashboard.show', compact('timetableData', 'timetableName'));
+            $timetableId = $timetable;
+            return view('dashboard.show', compact('timetableData', 'timetableName','timetableId'));
         }
     }
 
@@ -176,4 +177,47 @@ class TimetablesController extends Controller
 //         return view('dashboard.show', compact('fullHtml', 'timetableName'));
 //     }
 // }
+
+
+public function saveHtml(Request $request, $id)
+{
+    $request->validate([
+        'content' => 'required|string',
+    ]);
+
+    // Define the file path (you can customize the path and filename)
+    $filePath = 'public/timetables/timetable_' . $id . '.html';
+
+    // Save the content to an HTML file
+    Storage::disk('local')->put($filePath, $request->input('content'));
+
+    return response()->json(['success' => true]);
+}
+
+public function destroy($id)
+{
+    // Find the timetable by ID
+    $timetable = Timetable::findOrFail($id);
+
+    // Construct the file path using the timetable ID
+    $filePath = 'public/timetables/timetable_' . $timetable->id . '.html';
+
+    // Delete the timetable
+    $timetable->delete();
+
+    // Delete the file from storage if it exists
+    if (Storage::disk('local')->exists($filePath)) {
+        Storage::disk('local')->delete($filePath);
+    }
+
+    // Redirect back with a success message
+    return redirect('/dashboard')->with('success', 'Timetable deleted successfully.');
+}
+    public function getProgress($id)
+{
+    $timetable = Timetable::find($id);
+    return response()->json(['progress' => $timetable->progress,
+'status' => $timetable->status]);
+}
+
 }

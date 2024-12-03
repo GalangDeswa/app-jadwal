@@ -17,7 +17,7 @@ Akun
 
     <div class="page-body" id="resource-container">
         <div class="row">
-            {{-- <div class="col-md-4 col-sm-8 col-xs-12 col-md-offset-4 col-sm-offset-2">
+            <div class="col-md-4 col-sm-8 col-xs-12 col-md-offset-4 col-sm-offset-2">
                 <form method="POST" action="{{ URL::to('/my_account') }}">
                     {!! csrf_field() !!}
                     @include('errors.form_errors')
@@ -73,8 +73,8 @@ Akun
                             class="btn btn-lg btn-block btn-primary">
                     </div>
                 </form>
-            </div> --}}
-            <div class="col-md-4 col-sm-8 col-xs-12 col-md-offset-4 col-sm-offset-2">
+            </div>
+            {{-- <div class="col-md-4 col-sm-8 col-xs-12 col-md-offset-4 col-sm-offset-2">
                 <form method="POST" action="{{ URL::to('/my_account') }}">
                     {!! csrf_field() !!}
                     @include('errors.form_errors')
@@ -91,11 +91,11 @@ Akun
                             value="{{ $user->name }}">
                     </div>
 
-                    {{-- <div class="form-group">
+                    <div class="form-group">
                         <label>Your Answer</label>
                         <input type="text" class="form-control" name="security_question_answer"
                             value="{{ $user->security_question_answer }}">
-                    </div> --}}
+                    </div>
 
                     <a href="#" id="password-container-toggle" data-toggle="collapse" data-target="#password-fields"
                         style="text-decoration: none">Password Settings</a>
@@ -122,7 +122,7 @@ Akun
                         <input type="submit" name="submit" value="Update akun" class="btn btn-lg btn-block btn-primary">
                     </div>
                 </form>
-            </div>
+            </div> --}}
         </div>
     </div>
 </div>

@@ -25,6 +25,8 @@ class Room
      */
     private $roomType;
 
+    private $roomName;
+
     /**
      * Create a new room
      *
@@ -36,6 +38,7 @@ class Room
         $this->roomId = $roomId;
         $this->model = RoomModel::find($roomId);
         $this->roomType = $this->model->room_type;
+        $this->roomName = $this->model->name;
     }
 
     /**
@@ -44,6 +47,15 @@ class Room
 
      public function getRoomType() {
         return $this->roomType;
+     }
+
+
+     /**
+     * Get room type
+     */
+
+     public function getRoomName() {
+        return $this->roomName;
      }
 
     /**

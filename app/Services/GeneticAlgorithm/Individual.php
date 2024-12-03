@@ -42,8 +42,8 @@ class Individual
                         // echo $module->getName()."\n";
                         // echo $module->getCredit()."\n";
                         $credit = $module->getCredit();
-                        $lol = $timetable->findSuitableStartTime($credit);
-                        $all = Timeslotv3::getAllTimeSlotIds();
+                        //$lol = $timetable->findSuitableStartTime($credit);
+                        //$all = Timeslotv3::getAllTimeSlotIds();
                         $timeslotId = $timetable->getRandomTimeslot()->getId();
                         // echo "timefbekbfhjbfjksehf"."\n";
                         // echo $timeslotId."\n";

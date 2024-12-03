@@ -1,7 +1,8 @@
 /** Login form styles **/
 .login-page {
     background: url(../images/login_bg.jpg);
-    height: 600px;
+    /* height: 600px; */
+    max-height: 100%;
     -webkit-background-size: cover !important;
     -moz-background-size: cover !important;
     -o-background-size: cover !important;
@@ -11,7 +12,7 @@
 }
 
 #login-form-container {
-    margin-top: 300px;
+    margin-top: 200px;
 }
 
 #activation-form-container {

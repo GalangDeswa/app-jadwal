@@ -12,12 +12,13 @@
 */
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\TimetablesController;
 
 Route::get('/', function() {
     return redirect('/dashboard');
 });
 
-Route::get('/dashboard', 'DashboardController@index');
+Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
 Route::get('/search', 'DashboardController@search')->name('search');
 Route::get('/searchv2', 'DashboardController@searchv2')->name('searchv2');
 
@@ -42,6 +43,14 @@ Route::post('timetables', 'TimetablesController@store');
 Route::get('timetables', 'TimetablesController@index');
 Route::get('timetables/view/{id}', 'TimetablesController@view');
 Route::get('timetables/viewv2/{id}', 'TimetablesController@viewv2');
+
+
+Route::post('/timetable/save-html/{id}', [TimetablesController::class, 'saveHtml'])->name('timetable.saveHtml');
+
+Route::delete('/timetables/delete/{id}', [TimetablesController::class, 'destroy'])->name('timetables.destroy');
+
+
+Route::get('/timetable/progress/{id}', [TimetablesController::class, 'getProgress'])->name('progress');
 
 // User account activation routes
 Route::get('/users/activate', 'UsersController@showActivationPage');

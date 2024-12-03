@@ -561,6 +561,13 @@ $idtime = $id++;
         return $classes;
     }
 
+
+    private function timeslotsOverlap($timeslotA, $timeslotB)
+{
+    // Assuming timeslot has getStartTime() and getEndTime() methods
+    return !($timeslotA->getEndTime() <= $timeslotB->getStartTime() || $timeslotA->getStartTime() >= $timeslotB->getEndTime());
+}
+
     /**
      * Calculate the number of clashes
      *
@@ -570,6 +577,7 @@ $idtime = $id++;
     {
         $clashes = 0;
         $days = Day::all();
+         $classClashes = [];
          // Create an array to hold classes with their ranks
          //$classesWithRanks = [];
 
@@ -580,7 +588,28 @@ $idtime = $id++;
             $timeslot = $this->getTimeslot($classA->getTimeslotId());
             $module = $this->getModule($classA->getModuleId());
             $room = $this->getRoom($classA->getRoomId());
-            $module = $this->getModule($classA->getModuleId());
+           // $module = $this->getModule($classA->getModuleId());
+
+             // Initialize clash count for the current class
+             $classClashes[$classA->getId()] = 0;
+
+            // Check for overlapping timeslots within the same day
+        foreach ($this->classes as $id => $classB) {
+            if ($classA->getId() != $classB->getId()) {
+                $timeslotA = $this->getTimeslot($classA->getTimeslotId());
+                $timeslotB = $this->getTimeslot($classB->getTimeslotId());
+
+                // Check if they are on the same day and if the timeslots overlap
+                if ($timeslotA->getDayId() == $timeslotB->getDayId() && $this->timeslotsOverlap($timeslotA, $timeslotB))
+                {
+                  //  echo " timeslot A hari ----->  ". $timeslotA->getDayId() . "  timeslot B hari ----->  ". $timeslotB->getDayId() . "\n";
+                 // $clashes +=100;
+                 $clashes++;
+                  $classClashes[$classA->getId()]++;
+                 // error_log("Overlap detected between Class ID {$classA->getId()} and Class ID {$classB->getId()}");
+                }
+            }
+        }
 
              // Add class to the array with its rank
             //  $classesWithRanks[] = [
@@ -623,16 +652,22 @@ $idtime = $id++;
 
              // Check if room type matches course requirements
              if ($room->getRoomType() !== $module->getRequiredRoomType()) {
-             $clashes += 10; // Higher penalty for wrong room type
+             //$clashes += 10; // Higher penalty for wrong room type
+             $clashes++;
+              $classClashes[$classA->getId()]++;
              }
 
             if ($roomCapacity < $groupSize) {
+                //$clashes+=100;
                 $clashes++;
+                 $classClashes[$classA->getId()]++;
             }
 
             // Check if credits match
             if ($module->getCreditasString() != $timeslot->getCredit()) {
-           $clashes +=100; // Increment clashes if credits do not match
+         //  $clashes +=100; // Increment clashes if credits do not match
+              $clashes++;
+               $classClashes[$classA->getId()]++;
             }
 
             //render belum fix check render timetable
@@ -640,6 +675,7 @@ $idtime = $id++;
             // Check if we don't have any lecturer forced to teach at his occupied time
             if (in_array($timeslot->getId(), $professor->getOccupiedSlots())) {
                 $clashes++;
+                 $classClashes[$classA->getId()]++;
             }
 
             // Check if room is taken
@@ -647,6 +683,7 @@ $idtime = $id++;
                 if ($classA->getId() != $classB->getId()) {
                     if (($classA->getRoomId() == $classB->getRoomId()) && ($classA->getTimeslotId() == $classB->getTimeslotId())) {
                         $clashes++;
+                         $classClashes[$classA->getId()]++;
                         break;
                     }
                 }
@@ -655,6 +692,7 @@ $idtime = $id++;
 
             if (in_array($classA->getRoomId(), $this->getGroup($classA->getGroupId())->getUnavailableRooms())) {
                 $clashes++;
+                 $classClashes[$classA->getId()]++;
             }
 
             // Check if professor is available
@@ -664,6 +702,7 @@ $idtime = $id++;
                         && ($classA->getTimeslotId() == $classB->getTimeslotId())
                     ) {
                         $clashes++;
+                         $classClashes[$classA->getId()]++;
                         break;
                     }
                 }
@@ -674,6 +713,7 @@ $idtime = $id++;
                 if ($classA->getId() != $classB->getId()) {
                     if (($classA->getGroupId() == $classB->getGroupId()) && ($classA->getTimeslotId() == $classB->getTimeslotId())) {
                         $clashes++;
+                         $classClashes[$classA->getId()]++;
                         break;
                     }
                 }
@@ -695,6 +735,7 @@ $idtime = $id++;
                             if ($classA->getModuleId() == $classB->getModuleId()) {
                                 if ($classA->getRoomId() != $classB->getRoomId()) {
                                     $clashes++;
+                                     $classClashes[$classA->getId()]++;
                                 }
 
                                 $moduleTimeslots[] = $classB->getTimeslotId();
@@ -703,12 +744,19 @@ $idtime = $id++;
 
                         if (!$this->areConsecutive($moduleTimeslots)) {
                             $clashes++;
+                             $classClashes[$classA->getId()]++;
                         }
 
                         $checkedModules[] = $classA->getModuleId();
                     }
                 }
             }
+        }
+
+
+        // Echo the class clashes
+        foreach ($classClashes as $classId => $clashCount) {
+        echo "Class ID: $classId has $clashCount clashes.\n";
         }
 
         return $clashes;

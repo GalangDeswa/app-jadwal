@@ -12,6 +12,7 @@ use App\Models\Professor as ProfessorModel;
 use App\Models\CollegeClass as CollegeClassModel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Carbon;
 
 class TimetableGA
 {
@@ -144,6 +145,55 @@ class TimetableGA
         return $id;
     }
 
+
+// public function getNextTimeslotId($day, $timeslot)
+// {
+//     $highestRank = TimeslotModel::count();
+//     $currentRank = (int)($timeslot->rank);
+//     $id = '';
+//     $endId = 'D0T0';
+//     $timeParts = explode(' - ', $timeslot->time);
+//     $startTime = $timeParts[0]; // Get the start time
+//     $endTime = $timeParts[1]; // Get the end time
+
+//    // $endTime = Carbon::parse($timeslot->time)->format('H:i');
+
+
+//     if (($currentRank + 1) <= $highestRank) {
+        
+
+//        // $nextTimeslots = TimeslotModel::where('rank', ($currentRank + 1))->where('time', '>=', $endTime)->get();
+//         $nextTimeslots = TimeslotModel::whereRaw("SUBSTRING_INDEX(time, ' - ', 2) > ?", [$endTime])
+//         ->orderByRaw("SUBSTRING_INDEX(time, ' - ', 1) ASC") // Order by start time
+//         ->get();
+
+//         // // Fetch the next timeslot with the next rank
+//         // $nextTimeslots = TimeslotModel::where('rank', $nextRank)
+//         // ->whereRaw("SUBSTRING_INDEX(time, ' - ', 1) > ?", [$endTime])
+//         // ->first();
+
+//         // // If no suitable timeslot is found at the next rank, you can continue to search for the next ranks
+//         // if (!$nextTimeslot) {
+//         // $nextTimeslot = TimeslotModel::where('rank', '>', $currentRank)
+//         // ->whereRaw("SUBSTRING_INDEX(time, ' - ', 1) > ?", [$endTime])
+//         // ->orderBy('rank', 'asc') // Order by rank to find the earliest valid timeslot
+//         // ->first();
+//         // }
+
+//         if ($nextTimeslots->count() > 0) {
+//             $nextTimeslot = $nextTimeslots->first();
+//             $id = 'D' . $day->id  . 'T' . $nextTimeslot->id;
+//             echo " next timeslot id --------->   ". $nextTimeslot->time."\n";
+//         } else {
+//             $id = $endId;
+//         }
+//     } else {
+//         $id = $endId;
+//     }
+
+//     return $id;
+// }
+
     /**
      * Run the timetable generation algorithm
      *
@@ -151,16 +201,18 @@ class TimetableGA
     public function run()
     {
         try {
-            $maxGenerations = 15;
+            $maxGenerations = 20;
 
             $timetable = $this->initializeTimetable();
 
             $algorithm = new GeneticAlgorithm(100, 0.01, 0.9, 2, 10);
+          // $algorithm = new GeneticAlgorithm(200, 0.05, 0.8, 5, 10);
 
             $population = $algorithm->initPopulation($timetable);
 
             $algorithm->evaluatePopulation($population, $timetable);
 
+          
             // Keep track of current generation
             $generation = 1;
 
@@ -169,10 +221,10 @@ class TimetableGA
                 && !$algorithm->isGenerationsMaxedOut($generation, $maxGenerations)
             ) {
                 $fittest = $population->getFittest(0);
-
-                print "Generation: " . $generation . "(" . $fittest->getFitness() . ") - ";
+                print "Generation: " . $generation . "( " . number_format($fittest->getFitness(), 4) . ") - ";
                 print $fittest;
                 print "\n";
+                echo "-----------------generation------------------------\n";
 
                 // Apply crossover
                 $population = $algorithm->crossoverPopulation($population);
@@ -188,6 +240,11 @@ class TimetableGA
 
                 // Cool temperature of GA for simulated annealing
                 $algorithm->coolTemperature();
+
+
+                 // Calculate progress
+                 $progress = ($generation / $maxGenerations) * 100;
+                 $this->timetable->update(['progress' => $progress]);
             }
 
             $solution =  $population->getFittest(0);
@@ -223,8 +280,12 @@ class TimetableGA
                     'room_id' => $roomId
                 ]);
             }
+            
 
             event(new TimetablesGenerated($this->timetable));
+
+            $this->timetable->update(['progress' => 100]);
+
         } catch (\Throwable $th) {
             print $th->getMessage()." ".$th->getLine()." ".$th->getFile();
             Log::error("Error while generating timetable " . $th->getMessage(), ['trace' => $th->getTrace()]);

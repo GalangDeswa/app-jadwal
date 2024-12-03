@@ -34,6 +34,9 @@ class Timeslot
 
     private $credit;
     private $rank;
+    private $time;
+  private $startTime; // e.g., '08:00'
+  private $endTime; // e.g., '09:00'
 
     /**
      * Create a timeslot
@@ -56,6 +59,13 @@ class Timeslot
         $this->timeslotModel = TimeslotModel::find($timeslotId);
         $this->credit = $this->timeslotModel->credit;
         $this->rank = $this->timeslotModel->rank;
+        $this->time = $this->timeslotModel->time;
+        
+        $timeParts = explode(' - ', $this->timeslotModel->time);
+        $this->startTime = $timeParts[0]; // Get the start time
+        $this->endTime = $timeParts[1];
+
+
 
 //         echo "dari timeslot php---------------------------------------->"."\n";
 //         echo "Day ID: $dayId, Timeslot ID: $timeslotId\n"."\n";
@@ -115,4 +125,25 @@ class Timeslot
     {
         return $this->timeslotModel->id;
     }
+
+
+    public function getStartTime()
+    {
+    return $this->startTime;
+    }
+
+    public function getEndTime()
+    {
+    return $this->endTime;
+    }
+
+    public function getTime(){
+        return $this->time;
+    }
+
+      // Method to get the time range in the desired format
+      public function getTimeRange()
+      {
+      return $this->startTime . ' - ' . $this->endTime;
+      }
 }

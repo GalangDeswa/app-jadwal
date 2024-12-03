@@ -62,7 +62,8 @@
                             </div>
 
                             <div class="col-lg-5 col-md-5 col-sm-5">
-                                <button type="submit" class="submit-btn btn btn-primary btn-block">Add Resource</button>
+                                <button type="submit" id="generatejadwal"
+                                    class="submit-btn btn btn-primary btn-block">Add Resource</button>
                             </div>
                         </div>
                     </div>
@@ -71,3 +72,11 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById('generatejadwal').addEventListener('click', function() {
+        setTimeout(function() {
+            location.reload(); // This will reload the current page after 2 seconds
+        }, 2000); // Delay of 2000 milliseconds (2 seconds)
+    });
+</script>

@@ -77,7 +77,14 @@ class GeneticAlgorithm
     public function initPopulation($timetable)
     {
         $population = new Population($this->populationSize, $timetable);
+        
+         // Count the number of individuals in the population
+         $individuals = $population->getIndividuals(); // Get the array of individuals
+         $numberOfIndividuals = count($individuals); // Count the individuals
 
+         // Output the population size and the number of individuals
+        //  echo "Population Size: " . $this->populationSize . PHP_EOL;
+        //  echo "Number of Individuals: " . $numberOfIndividuals . PHP_EOL;
         return $population;
     }
 
@@ -105,17 +112,41 @@ class GeneticAlgorithm
      * @param \App\Services\GeneticAlgorithm\Timetable $timetable A timetable
      * @return double The fitness of the individual
      */
+    // public function calculateFitness($individual, $timetable)
+    // {
+    //     $timetable = clone $timetable;
+
+    //     $timetable->createClasses($individual);
+
+    //     $clashes = $timetable->calcClashes();
+    //     $fitness = 1.0 / ($clashes + 1);
+    //     $individual->setFitness($fitness);
+    //     return $fitness;
+    // }
+
     public function calculateFitness($individual, $timetable)
-    {
-        $timetable = clone $timetable;
+{
+    $timetable = clone $timetable;
 
-        $timetable->createClasses($individual);
-        $clashes = $timetable->calcClashes();
-        $fitness = 1.0 / ($clashes + 1);
+    // Create classes based on the individual's chromosome
+    $timetable->createClasses($individual);
 
-        $individual->setFitness($fitness);
-        return $fitness;
-    }
+    // Calculate clashes
+    $clashes = $timetable->calcClashes();
+
+    // Calculate fitness
+    $fitness = 1.0 / ($clashes + 1);
+    $individual->setFitness($fitness);
+
+   // Echo clashes and fitness for this individual
+//echo "Chromosome: " . json_encode($individual->getChromosome()) . "\n"; // Assuming getChromosome() returns the chromosome representation
+echo "Clashes: " . $clashes . "\n";
+echo "Fitness: " . number_format($fitness, 4) . "\n"; // Format fitness to 4 decimal places
+echo "---------------chromosome--------------------------\n";
+    
+
+    return $fitness;
+}
 
     /**
      * Evaluate a given population

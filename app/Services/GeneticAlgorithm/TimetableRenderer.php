@@ -10,6 +10,7 @@ use App\Models\Course as CourseModel;
 use App\Models\Timeslot as TimeslotModel;
 use App\Models\CollegeClass as CollegeClassModel;
 use App\Models\Professor as ProfessorModel;
+use Illuminate\Support\Carbon;
 
 class TimetableRenderer
 {
@@ -33,7 +34,7 @@ class TimetableRenderer
      * Timeslot, Room, Professor
      *
      */
-   public function render()
+  public function render()
 {
     try {
         $chromosome = explode(",", $this->timetable->chromosome);
@@ -41,9 +42,14 @@ class TimetableRenderer
         $data = $this->generateData($chromosome, $scheme);
 
         $days = $this->timetable->days()->orderBy('id', 'ASC')->get();
-        $timeslots = TimeslotModel::orderBy('rank', 'ASC')->get();
+        $timeslots = TimeslotModel::all();
         $classes = CollegeClassModel::all();
         $periodid = $this->timetable->academic_period_id;
+
+        // Sort timeslots by time before rendering
+        $timeslots = $timeslots->sortBy(function($timeslot) {
+            return Carbon::createFromFormat('H:i - H:i', $timeslot->time);
+        })->values(); // Use values() to reset the keys
 
         $tableTemplate = '<h3 class="text-center">{TITLE}</h3>
                          <h4 id="period" class="text-center">Semester - {period}</h4>
@@ -51,7 +57,13 @@ class TimetableRenderer
                            <table class="table table-bordered"
                                style="max-width: 800px; width: 100%; font-size: 12px; margin: auto;">
                                 <thead>
-                                    {HEADING}
+                                    <tr>
+                                        <td><strong>HARI</strong></td>
+                                        <td><strong>PUKUL</strong></td>
+                                        <td><strong>RUANG</strong></td>
+                                        <td><strong>MATA KULIAH</strong></td>
+                                        <td><strong>NAMA DOSEN</strong></td>
+                                    </tr>
                                 </thead>
                                 <tbody>
                                     {BODY}
@@ -62,26 +74,13 @@ class TimetableRenderer
         $content = "";
 
         foreach ($classes as $class) {
-            $header = "<tr class='table-head'>";
-            $header .= "<td><strong>Waktu</strong></td>";
-
-            // Create header for each day
-            foreach ($days as $day) {
-                $header .= "<td><strong>" . strtoupper($day->name) . "</strong></td>";
-            }
-            $header .= "</tr>";
-
             $body = "";
             $hasCourses = false; // Flag to check if there are any courses
 
-            // Iterate over each timeslot
-            foreach ($timeslots as $timeslot) {
-                $rowContent = "<tr>
-                    <td style='padding: 5px;'>" . $timeslot->time . "</td>"; // Show the timeslot in the first column
-                $rowHasCourse = false; // Flag to check if this row has any course
-
-                // Check for courses for each day in this timeslot
-                foreach ($days as $day) {
+            // Iterate over each day
+            foreach ($days as $day) {
+                // Iterate over each sorted timeslot
+                foreach ($timeslots as $timeslot) {
                     if (isset($data[$class->id][$day->name][$timeslot->time])) {
                         $slotData = $data[$class->id][$day->name][$timeslot->time];
                         $courseCode = $slotData['course_code'];
@@ -89,33 +88,24 @@ class TimetableRenderer
                         $professor = $slotData['professor'];
                         $room = $slotData['room'];
 
-                        $rowContent .= "<td class='text-center'>";
-                       // $rowContent .= "<span class='course_code'>{$day->name}</span><br />";
-                        $rowContent .= "<span class='course_name'>{$courseName}</span><br />";
-                        $rowContent .= "<span class='room pull-left'>Ruang {$room}</span> <hr>";
-                        $rowContent .= "<span class='professor pull-right'>{$professor}</span> <hr>";
-                        $rowContent .= "</td>";
+                        // Create a row for this course
+                        $body .= "<tr>
+                            <td id='hari'>" . strtoupper($day->name) . "</td>
+                            <td id='waktu'>{$timeslot->time}</td>
+                            <td id='ruang'>{$room}</td>
+                            <td id='matkul'><strong>{$courseName}</strong></td>
+                            <td id='dosen'>{$professor}</td>
+                        </tr>";
 
-                        $rowHasCourse = true; // Mark that this row has a course
-                    } else {
-                        // No course for this timeslot and day
-                        $rowContent .= "<td class='text-center'><strong> - </strong></td>";
+                        $hasCourses = true; // Mark that there are courses for this class
                     }
-                }
-                $rowContent .= "</tr>";
-
-                // Only add this row to the body if it has at least one course
-                if ($rowHasCourse) {
-                    $body .= $rowContent;
-                    $hasCourses = true; // Mark that there are courses for this class
                 }
             }
 
             // Only include the class in the content if there are courses
             if ($hasCourses) {
                 $title = $class->name;
-                $content .= str_replace(['{TITLE}','{period}' ,'{HEADING}', '{BODY}'], [$title,$periodid,$header,
-                $body], $tableTemplate);
+                $content .= str_replace(['{TITLE}','{period}', '{BODY}'], [$title, $periodid, $body], $tableTemplate);
             }
         }
 
@@ -125,6 +115,7 @@ class TimetableRenderer
         $this->timetable->update([
             'file_url' => $path
         ]);
+        
     } catch (\Throwable $th) {
         echo $th->getMessage() . "\n";
         echo $th->getLine() . "\n";

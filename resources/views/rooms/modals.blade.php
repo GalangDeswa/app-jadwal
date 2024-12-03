@@ -40,8 +40,8 @@
                                         <option value="lab-kes">Lab Praktikum ilmu kesehatan</option>
                                         <option value="lab-kom">Lab Praktikum komputer</option>
                                         <option value="lab-far">Lab Praktikum farmasi</option>
-                                        {{-- <option value="magang">Magang</option>
-                                        <option value="KKN">Kuliah kerja nyata</option> --}}
+                                        <option value="magang">Magang</option>
+                                        <option value="KKN">Kuliah kerja nyata</option>
                                     </select>
                                 </div>
                             </div>
