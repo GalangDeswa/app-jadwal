@@ -5,8 +5,18 @@
 <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10 page-container">
     <div class="d-flex justify-content-between align-items-center">
         <h1 class="page-title flex-grow-1">{{ $timetableName }}</h1>
+        @if (Auth::user()->lvl != 'dosen')
         <button id="editButton" class="btn btn-primary">Edit</button>
+        @endif
     </div>
+
+    <div style="margin: 15px 0;">
+        <!-- Adjust the margin values as needed -->
+        <input type="text" id="searchInput" placeholder="cari jadwal" class="form-control"
+            style="display: inline-block; width: auto;">
+        <button id="searchButton" class="btn btn-secondary">Search</button>
+    </div>
+
     <div id="timetableContainer">
         {!! $timetableData !!}
     </div>
@@ -17,7 +27,63 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Include jQuery -->
 <script>
-    document.getElementById('editButton').addEventListener('click', function() {
+    // Function to check for time overlaps and color them accordingly
+    function checkTimeOverlaps() {
+        const timetableRows = document.querySelectorAll('#timetableContainer table tr');
+        const defaultColor = 'lightgrey'; // Default color for non-overlapping rows
+
+        // Clear previous highlights
+        timetableRows.forEach(row => {
+            row.style.backgroundColor = ''; // Reset color
+        });
+
+        // Iterate through each row
+        for (let i = 0; i < timetableRows.length; i++) {
+            const currentRow = timetableRows[i];
+            const dayCell = currentRow.querySelector('td[id="hari"]');
+            const timeCell = currentRow.querySelector('td[id="waktu"]');
+
+            if (dayCell && timeCell) {
+                const currentDay = dayCell.textContent.trim();
+                const currentTimeRange = timeCell.textContent.trim();
+
+                // Parse the time range (assuming format is "HH:MM - HH:MM")
+                const timeParts = currentTimeRange.split(' - ');
+                if (timeParts.length === 2) {
+                    const currentStartTime = new Date(`1970-01-01T${timeParts[0]}:00`);
+                    const currentEndTime = new Date(`1970-01-01T${timeParts[1]}:00`);
+
+                    // Check the next row for overlaps
+                    if (i + 1 < timetableRows.length) {
+                        const nextRow = timetableRows[i + 1];
+                        const nextDayCell = nextRow.querySelector('td[id="hari"]');
+                        const nextTimeCell = nextRow.querySelector('td[id="waktu"]');
+
+                        if (nextDayCell && nextTimeCell) {
+                            const nextDay = nextDayCell.textContent.trim();
+                            const nextTimeRange = nextTimeCell.textContent.trim();
+
+                            // Parse the next time range
+                            const nextTimeParts = nextTimeRange.split(' - ');
+                            if (nextTimeParts.length === 2) {
+                                const nextStartTime = new Date(`1970-01-01T${nextTimeParts[0]}:00`);
+                                const nextEndTime = new Date(`1970-01-01T${nextTimeParts[1]}:00`);
+
+                                // Check if the days are the same and if the times overlap
+                                if (currentDay === nextDay && (currentStartTime < nextEndTime && currentEndTime > nextStartTime)) {
+                                    // Highlight both rows in red
+                                    currentRow.style.backgroundColor = 'red';
+                                    nextRow.style.backgroundColor = 'red';
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    document.getElementById('editButton')?.addEventListener('click', function() {
         const timetableContainer = document.getElementById('timetableContainer');
         const addRowContainer = document.getElementById('addRowContainer');
         
@@ -40,6 +106,7 @@
                 },
                 success: function(response) {
                     alert('Timetable updated successfully!');
+                    checkTimeOverlaps(); // Check for overlaps after saving
                 },
                 error: function(xhr) {
                     alert('An error occurred while saving the timetable.');
@@ -72,22 +139,42 @@
                 newCell.contentEditable = "true"; // Make the cell editable
             }
             newRow.scrollIntoView(); // Scroll to the new row
+
+            // Check for overlaps after adding a new row
+            checkTimeOverlaps();
         } else {
             alert("Please select a row to add a new row below it.");
         }
     });
 
-    // Add click event to each row to select it
-    document.querySelectorAll('#timetableContainer table tr').forEach(row => {
-        row.addEventListener('click', function() {
-            // Remove 'selected-row' class from any previously selected row
-            document.querySelectorAll('.selected-row').forEach(selected => {
-                selected.classList.remove('selected-row');
-            });
-            // Add 'selected-row' class to the clicked row
-            this.classList.add('selected-row');
+    // Search functionality
+    document.getElementById('searchButton').addEventListener('click', function() {
+        const searchInput = document.getElementById('searchInput').value.toLowerCase();
+        const timetableRows = document.querySelectorAll('#timetableContainer table tr');
+
+        timetableRows.forEach(row => {
+            const cells = row.getElementsByTagName('td');
+            let rowContainsSearchTerm = false;
+
+            // Check each cell in the row for the search term
+            for (let i = 0; i < cells.length; i++) {
+                if (cells[i].textContent.toLowerCase().includes(searchInput)) {
+                    rowContainsSearchTerm = true;
+                    break;
+                }
+            }
+
+            // Show or hide the row based on whether it contains the search term
+            if (rowContainsSearchTerm) {
+                row.style.display = ''; // Show the row
+            } else {
+                row.style.display = 'none'; // Hide the row
+            }
         });
     });
+
+    // Call checkTimeOverlaps on page load to check existing rows
+    document.addEventListener('DOMContentLoaded', checkTimeOverlaps);
 </script>
 
 @endsection

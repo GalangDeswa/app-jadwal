@@ -64,16 +64,20 @@ class CollegeClassesController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'name' => 'required|unique:classes',
+            'name' => 'required|max:30|unique:classes',
             'size' => 'required'
         ];
+        $messages = [
+        'name.max' => 'maximal karakter nama 30',
+        ];
 
-        $this->validate($request, $rules);
+
+        $this->validate($request, $rules,$messages);
 
         $class = $this->service->store($request->all());
 
         if ($class) {
-            return response()->json(['message' => 'Class added'], 200);
+            return response()->json(['message' => 'prodi ditambah'], 200);
         } else {
             return response()->json(['error' => 'A system error occurred'], 500);
         }
@@ -92,7 +96,7 @@ class CollegeClassesController extends Controller
         if ($class) {
             return response()->json($class, 200);
         } else {
-            return response()->json(['error' => 'Class not found'], 404);
+            return response()->json(['error' => 'tidak ditemukan'], 404);
         }
     }
 
@@ -106,21 +110,25 @@ class CollegeClassesController extends Controller
     public function update($id, Request $request)
     {
         $rules = [
-            'name' => 'required|unique:classes,name,' . $id,
+            'name' => 'required|max:30|unique:classes,name,' . $id,
             'size' => 'required'
         ];
 
-        $this->validate($request, $rules);
+         $messages = [
+         'name.max' => 'maximal karakter nama 30',
+         ];
+
+        $this->validate($request, $rules, $messages);
 
         $class = CollegeClass::find($id);
 
         if (!$class) {
-            return response()->json(['error' => 'Class not found'], 404);
+            return response()->json(['error' => 'tidak ditemukan'], 404);
         }
 
         $class = $this->service->update($id, $request->all());
 
-        return response()->json(['message' => 'Class updated'], 200);
+        return response()->json(['message' => 'prodi diupdate'], 200);
     }
 
     /**
@@ -134,11 +142,11 @@ class CollegeClassesController extends Controller
         $class = CollegeClass::find($id);
 
         if (!$class) {
-            return response()->json(['error' => 'Class not found'], 404);
+            return response()->json(['error' => 'tidak ditemukan'], 404);
         }
 
         if ($this->service->delete($id)) {
-            return response()->json(['message' => 'Class has been deleted'], 200);
+            return response()->json(['message' => 'prodi dihapus'], 200);
         } else {
             return response()->json(['error' => 'An unknown system error occurred'], 500);
         }

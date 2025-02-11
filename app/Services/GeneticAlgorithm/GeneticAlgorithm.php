@@ -140,9 +140,9 @@ class GeneticAlgorithm
 
    // Echo clashes and fitness for this individual
 //echo "Chromosome: " . json_encode($individual->getChromosome()) . "\n"; // Assuming getChromosome() returns the chromosome representation
-echo "Clashes: " . $clashes . "\n";
-echo "Fitness: " . number_format($fitness, 4) . "\n"; // Format fitness to 4 decimal places
-echo "---------------chromosome--------------------------\n";
+// echo "Clashes: " . $clashes . "\n";
+// echo "Fitness: " . number_format($fitness, 4) . "\n"; // Format fitness to 4 decimal places
+// echo "---------------chromosome--------------------------\n";
     
 
     return $fitness;

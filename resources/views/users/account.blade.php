@@ -29,7 +29,7 @@ Akun
                     </div>
 
                     <div class="form-group">
-                        <label>Security Question</label>
+                        <label>Pertanyaan keamanan</label>
 
                         <div class="select2-wrapper">
                             <select name="security_question_id" class="form-control select2">
@@ -42,7 +42,7 @@ Akun
                     </div>
 
                     <div class="form-group">
-                        <label>Your Answer</label>
+                        <label>Jawaban</label>
                         <input type="text" class="form-control" name="security_question_answer"
                             value="{{ $user->security_question_answer }}">
                     </div>
@@ -51,21 +51,21 @@ Akun
                         style="text-decoration: none">Password Settings</a>
                     <div id="password-fields" class="collapse">
                         <div class="form-group">
-                            <label>New Password</label>
+                            <label>Password lama</label>
+                            <input type="password" class="form-control" placeholder="Current Password"
+                                name="old_password">
+                        </div>
+                        <div class="form-group">
+                            <label>Password baru</label>
                             <input type="password" class="form-control" placeholder="Password" name="password">
                         </div>
 
                         <div class="form-group">
-                            <label>Confirm Password</label>
+                            <label>konfirmasi Password</label>
                             <input type="password" class="form-control" placeholder="Password"
                                 name="password_confirmation">
                         </div>
 
-                        <div class="form-group">
-                            <label>Current Password</label>
-                            <input type="password" class="form-control" placeholder="Current Password"
-                                name="old_password">
-                        </div>
                     </div>
 
                     <div class="form-group">
@@ -73,7 +73,14 @@ Akun
                             class="btn btn-lg btn-block btn-primary">
                     </div>
                 </form>
+
+                <div class="form-group">
+                    <input type="button" value="Register Akun Baru" class="btn btn-custom btn-lg btn-block"
+                        onclick="window.location.href='/register';">
+                </div>
             </div>
+
+
             {{-- <div class="col-md-4 col-sm-8 col-xs-12 col-md-offset-4 col-sm-offset-2">
                 <form method="POST" action="{{ URL::to('/my_account') }}">
                     {!! csrf_field() !!}

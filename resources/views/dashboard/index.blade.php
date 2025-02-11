@@ -45,6 +45,13 @@ Dashboard
             </div>
         </div>
 
+        {{-- <div class="row" style="margin-top: 50px">
+            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 col-lg-offset-4 col-md-offset-4 col-sm-offset-4">
+                <button class="btn-success timetable-btn btn-block" id="start-queue-button">Start Queue Worker</button>
+            </div>
+        </div> --}}
+
+
         <div class="row" style="margin-top: 50px">
             <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 col-lg-offset-4 col-md-offset-4 col-sm-offset-4">
                 <button class="btn-primary timetable-btn btn-block" id="resource-add-button">Buat Jadwal Perkuliahan
@@ -97,7 +104,7 @@ Dashboard
             @else
             @if (request('search'))
             <div class="no-data text-center">
-                <p>No timetable found for the specified major.</p>
+                <p>Tidak ada jadwal ditemukan.</p>
             </div>
             @endif
             @endif
@@ -278,4 +285,24 @@ Dashboard
 
 @section('scripts')
 <script src="{{URL::asset('/js/dashboard/index.js')}}"></script>
+{{-- <script>
+    // resources/js/dashboard/index.js
+
+document.getElementById('start-queue-button').addEventListener('click', function() {
+    fetch('/start-queue', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+});
+</script> --}}
 @endsection

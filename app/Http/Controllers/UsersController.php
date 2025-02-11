@@ -40,10 +40,10 @@ class UsersController extends Controller
         $customMessages = [
         'name.required' => 'Kolom nama harus diisi.',
         //'name.string' => 'Kolom nama harus berupa string.',
-        'name.max' => 'Maximum karakter nama adalah 191.',
+        'name.max' => 'Maximum karakter nama adalah 30.',
         'email.required' => 'Kolom email harus diisi.',
         'email.email' => 'Format email tidak valid.',
-        'email.max' => 'Maximum karakter 191.',
+        'email.max' => 'Maximum karakter email 25.',
         'email.unique' => 'Email sudah terdaftar.',
         'password.required' => 'Kolom pasword harus diisi.',
        // 'password.string' => 'The password must be a string.',
@@ -53,8 +53,8 @@ class UsersController extends Controller
 
         // Validate the request data
         $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'name' => 'required|string|max:30',
+            'email' => 'required|string|email|max:25|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'password_confirmation' => 'required|string|min:8',
             'lvl'=>'required',
@@ -89,11 +89,11 @@ class UsersController extends Controller
          $user = User::where('email', $request->email)->first();
 
         if (!$user) {
-            return redirect()->back()->withErrors(['No user account has been set up yet']);
+            return redirect()->back()->withErrors(['belum ada akun user']);
         }
 
         if (!Hash::check($request->password, $user->password)) {
-            return redirect()->back()->withErrors(['Password is invalid']);
+            return redirect()->back()->withErrors(['password salah']);
         }
 
         Auth::login($user);
@@ -126,7 +126,7 @@ class UsersController extends Controller
         $user = Auth::user();
 
         if ($user->activated) {
-            return redirect()->back()->withError('Your account is already activated');
+            return redirect()->back()->withError('akun sudah aktif');
         }
 
         $rules = [
@@ -182,7 +182,7 @@ class UsersController extends Controller
         $user = User::first();
 
         if ($user->security_question_answer != $request->security_question_answer) {
-            return redirect()->back()->withErrors(['Your answer is not valid']);
+            return redirect()->back()->withErrors(['jawaban salah']);
         }
 
         $token = Helpers::generateRandomString();
@@ -258,7 +258,7 @@ class UsersController extends Controller
     public function updateAccount(Request $request)
     {
         $rules = [
-            'name' => 'required',
+            'name' => 'required|max:30',
            // 'email' => 'required|email|unique:users,email,' . Auth::user()->id,
             'security_question_id' => 'required',
             'security_question_answer' => 'required'
@@ -269,7 +269,11 @@ class UsersController extends Controller
             $rules['old_password'] = 'required';
         };
 
-        $this->validate($request, $rules);
+         $messages = [
+         'name.max' =>'maximal karakter nama 30'
+         ];
+
+        $this->validate($request, $rules, $messages);
 
         $user = Auth::user();
         $data = [
@@ -280,7 +284,7 @@ class UsersController extends Controller
 
         if ($request->has('password') && $request->password) {
             if (!Hash::check($request->old_password, $user->password)) {
-                return redirect()->back()->withErrors(['Current password is invalid']);
+                return redirect()->back()->withErrors(['password lama salah']);
             }
 
             $data['password'] = bcrypt($request->password);
@@ -288,6 +292,6 @@ class UsersController extends Controller
 
         $user->update($data);
 
-        return redirect()->back()->with('status', 'Your account has been updated');
+        return redirect()->back()->with('status', 'akun diupdate');
     }
 }

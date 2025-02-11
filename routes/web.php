@@ -13,10 +13,29 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TimetablesController;
+use App\Http\Controllers\QueueController;
 
 Route::get('/', function() {
     return redirect('/dashboard');
 });
+
+
+// Route::post('/start-queue-listener', [App\Http\Controllers\QueueController::class,
+// 'startListener'])->name('queue.start');
+
+
+// Route::post('/start-queue', [QueueController::class, 'startQueue'])->name('start.queue');
+
+
+// Route::get('/qstart', function () {
+
+// chdir('..');
+
+// exec('cache:clear');
+
+// });
+
+
 
 Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
 Route::get('/search', 'DashboardController@search')->name('search');

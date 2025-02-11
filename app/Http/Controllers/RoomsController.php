@@ -60,14 +60,16 @@ class RoomsController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'name' => 'required|unique:rooms,name',
+            'name' => 'required|unique:rooms,name|max:20',
             'capacity' => 'required|numeric',
             'room_type' => 'required'
         ];
 
         $messages = [
-            'name.unique' => 'This room already exists',
-            'room_type.required'=>'kolom tipe ruang harus diisi'
+            'name.unique' => 'Ruang sudah ada',
+            'room_type.required'=>'kolom tipe ruang harus diisi',
+            'name.max'=>'maximal karakter adalah 20'
+
         ];
 
         $this->validate($request, $rules, $messages);
@@ -75,7 +77,7 @@ class RoomsController extends Controller
         $room = $this->service->storev2($request->all());
 
         if ($room) {
-            return response()->json(['message' => 'Room added'], 200);
+            return response()->json(['message' => 'ruang ditambah'], 200);
         } else {
             return response()->json(['error' => 'A system error occurred'], 500);
         }
@@ -94,7 +96,7 @@ class RoomsController extends Controller
         if ($room) {
             return response()->json($room, 200);
         } else {
-            return response()->json(['error' => 'Room not found'], 404);
+            return response()->json(['error' => 'tidak ditemukan'], 404);
         }
     }
 
@@ -107,12 +109,13 @@ class RoomsController extends Controller
     public function update($id, Request $request)
     {
         $rules = [
-            'name' => 'required|unique:rooms,name,' . $id,
+            'name' => 'required|max:20|unique:rooms,name,' . $id,
             'capacity' => 'required|numeric'
         ];
 
         $messages = [
-            'name.unique' => 'This room already exists'
+            'name.unique' => 'This room already exists',
+            'name.max' => 'maximal karakter 20'
         ];
 
         $this->validate($request, $rules, $messages);
@@ -120,12 +123,12 @@ class RoomsController extends Controller
         $room = $this->service->show($id);
 
         if (!$room) {
-            return response()->json(['error' => 'Room not found'], 404);
+            return response()->json(['error' => 'tidak ditemukan'], 404);
         }
 
         $room = $this->service->updatev2($id, $request->all());
 
-        return response()->json(['message' => 'Room updated'], 200);
+        return response()->json(['message' => 'ruang diupdate'], 200);
     }
 
     public function destroy($id)
@@ -133,11 +136,11 @@ class RoomsController extends Controller
         $room = Room::find($id);
 
         if (!$room) {
-            return response()->json(['error' => 'Room not found'], 404);
+            return response()->json(['error' => 'tidak ditemukan'], 404);
         }
 
         if ($this->service->delete($id)) {
-            return response()->json(['message' => 'Room has been deleted'], 200);
+            return response()->json(['message' => 'ruang dihapus'], 200);
         } else {
             return response()->json(['error' => 'An unknown system error occurred'], 500);
         }

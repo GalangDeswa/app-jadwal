@@ -97,7 +97,7 @@ class TimetablesController extends Controller
 
         event(new TimetablesRequested($timetable));
 
-        return response()->json(['message' => 'Timetables are being generated.Check back later'], 200);
+        return response()->json(['message' => 'Jadwal sedang diproses'], 200);
     }
 
     /**

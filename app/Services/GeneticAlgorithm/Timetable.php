@@ -5,67 +5,6 @@ namespace App\Services\GeneticAlgorithm;
 use App\Models\Day;
 use Illuminate\Support\Facades\DB;
 
- class timeslotv2{
-    var $id;
-    var $time;
-     public function __construct($id,$time){
-        $this->id = $id;
-         $this->time=$time;
-     }
-
-    
- }
-
-class Timeslotv3 {
-    private static $timeSlots = [];
-    private static $nextId = 1; // Static variable to simulate auto-incrementing ID
-
-    // Method to add a time slot
-    public static function addTimeSlot($time) {
-        $id = self::$nextId++; // Assign current ID and increment for the next
-        self::$timeSlots[] = new self($id, $time);
-    }
-
-    // Method to get all time slots
-    public static function getAllTimeSlots() {
-        return array_map(function($slot) {
-            return $slot->toArray();
-        }, self::$timeSlots);
-    }
-
-    // Method to convert the object to an array
-    public function toArray() {
-        return [$this->id, $this->time];
-    }
-
-    // Private properties
-    private $id;
-    private $time;
-
-    // Constructor
-    private function __construct($id, $time) {
-        $this->id = $id;
-        $this->time = $time;
-    }
-
-      // Method to get a time slot by ID
-    public static function getTimeSlotById($id) {
-        foreach (self::$timeSlots as $slot) {
-            if ($slot->id === $id) {
-                return $slot->toArray(); // Return the time slot as an array
-            }
-        }
-        return null; // Return null if not found
-    }
-
-    // Method to get all time slot IDs
-    public static function getAllTimeSlotIds() {
-        return array_map(function($slot) {
-            return $slot->id;
-        }, self::$timeSlots);
-    }
-}
-
 class Timetable
 {
     /**
@@ -183,9 +122,9 @@ $idtime = $id++;
 // echo $readableEndTime."\n";
 // echo $time."\n";
 
-    $add = timeslotv3::addTimeSlot($time);
+   // $add = timeslotv3::addTimeSlot($time);
 
-    $allTimeSlots = Timeslotv3::getAllTimeSlots();
+   // $allTimeSlots = Timeslotv3::getAllTimeSlots();
 
     // Output the array of time slots
   //  print_r($allTimeSlots);
@@ -294,6 +233,36 @@ $idtime = $id++;
 
         return $this->getRandomRoomByType($requiredType) ?? $this->getRandomRoom();
      }
+
+      /**
+     * Get a random timeslot by course credit
+     *
+     * @param int $courseCredits The credits of the course
+     * @return Timeslot|null A random timeslot that matches the course credits or a random timeslot if none found
+     */
+    public function getRandomTimeslotByCourseCredit($courseCredits)
+    {
+        // Filter timeslots that match the required course credits
+        $matchingTimeslots = array_filter($this->timeslots, function($timeslot) use ($courseCredits) {
+           // echo "time credit match! --->  "."\n";
+            return (int)$timeslot->getCredit() === $courseCredits;
+        });
+
+        // If there are matching timeslots, return a random one
+        if (!empty($matchingTimeslots)) {
+        
+            return $matchingTimeslots[array_rand($matchingTimeslots)];
+        }
+
+        // If no matching timeslot is found, return a random timeslot from all available timeslots
+        if (!empty($this->timeslots)) {
+            // echo "noo credit match! ---> "."\n";
+            return $this->timeslots[array_rand($this->timeslots)];
+        }
+
+        // Return null if no timeslots are available
+        return null;
+    }
 
     /**
      * Add a professor
@@ -568,6 +537,15 @@ $idtime = $id++;
     return !($timeslotA->getEndTime() <= $timeslotB->getStartTime() || $timeslotA->getStartTime() >= $timeslotB->getEndTime());
 }
 
+private function isDuringBreak($time)
+{
+    // Extract start and end times from the time string
+    list($startTime, $endTime) = explode(' - ', $time);
+    
+    // Check if the class time overlaps with break time (12:00 - 14:00)
+    return ($startTime < '14:00' && $endTime > '12:00');
+}
+
     /**
      * Calculate the number of clashes
      *
@@ -581,6 +559,10 @@ $idtime = $id++;
          // Create an array to hold classes with their ranks
          //$classesWithRanks = [];
 
+             // Define break time range
+             $breakStart = '12:00';
+             $breakEnd = '13:00';
+
         foreach ($this->classes as $id => $classA) {
             $roomCapacity = $this->getRoom($classA->getRoomId())->getCapacity();
             $groupSize = $this->getGroup($classA->getGroupId())->getSize();
@@ -593,6 +575,13 @@ $idtime = $id++;
              // Initialize clash count for the current class
              $classClashes[$classA->getId()] = 0;
 
+               // Check if the class is scheduled during break time
+        if ($this->isDuringBreak($timeslot->getTime())) {
+            echo 'duirng break time --- |>'.$timeslot->getTime()."\n";
+            $clashes++;
+            $classClashes[$classA->getId()]++;
+        }
+
             // Check for overlapping timeslots within the same day
         foreach ($this->classes as $id => $classB) {
             if ($classA->getId() != $classB->getId()) {
@@ -602,52 +591,13 @@ $idtime = $id++;
                 // Check if they are on the same day and if the timeslots overlap
                 if ($timeslotA->getDayId() == $timeslotB->getDayId() && $this->timeslotsOverlap($timeslotA, $timeslotB))
                 {
-                  //  echo " timeslot A hari ----->  ". $timeslotA->getDayId() . "  timeslot B hari ----->  ". $timeslotB->getDayId() . "\n";
                  // $clashes +=100;
                  $clashes++;
                   $classClashes[$classA->getId()]++;
-                 // error_log("Overlap detected between Class ID {$classA->getId()} and Class ID {$classB->getId()}");
+                 // echo("Overlap detected between Class ID {$classA->getId()} and Class ID {$classB->getId()}");
                 }
             }
         }
-
-             // Add class to the array with its rank
-            //  $classesWithRanks[] = [
-            //  'class' => $classA,
-            //  'rank' => $timeslot->getRank(), // Assume getRank() method exists in Timeslot class
-            //  'credit' => $timeslot->getCredit() // Assume getCredit() method exists in Timeslot class
-            //  ];
-
-             // Sort classes by rank (lower rank first)
-            //  usort($classesWithRanks, function($a, $b) {
-            //  return $a['rank'] <=> $b['rank'];
-            //      });
-
-
-                 // Now check for clashes after sorting by rank
-
-                //  foreach ($classesWithRanks as $entryA){
-                //      $classA = $entryA['class'];
-                //      $timeslotA = $entryA['credit']; // Get the credit for the current timeslot
-                //      $moduleA = $this->getModule($classA->getModuleId());
-                //      $creditsA = $moduleA->getCreditasString(); // Get the credits for the module
-
-                //      // Check if credits match
-                //      if ($creditsA != $timeslotA) {
-                //      $clashes++; // Increment clashes if credits do not match
-                //      }
-
-                //        foreach ($this->classes as $classB){
-                //          if ($classA->getId() != $classB->getId()){
-                //              if (($classA->getRoomId() == $classB->getRoomId()) && ($classA->getTimeslotId() ==
-                //              $classB->getTimeslotId())){
-                //                 $clashes++;
-                //                 break;
-                //              }
-                //          }
-                //        }
-                //  }
-
 
 
              // Check if room type matches course requirements
@@ -670,7 +620,7 @@ $idtime = $id++;
                $classClashes[$classA->getId()]++;
             }
 
-            //render belum fix check render timetable
+            
 
             // Check if we don't have any lecturer forced to teach at his occupied time
             if (in_array($timeslot->getId(), $professor->getOccupiedSlots())) {
@@ -754,10 +704,10 @@ $idtime = $id++;
         }
 
 
-        // Echo the class clashes
-        foreach ($classClashes as $classId => $clashCount) {
-        echo "Class ID: $classId has $clashCount clashes.\n";
-        }
+        // // Echo the class clashes
+        // foreach ($classClashes as $classId => $clashCount) {
+        // echo "Class ID: $classId has $clashCount clashes.\n";
+        // }
 
         return $clashes;
     }
@@ -781,4 +731,6 @@ $idtime = $id++;
 
         return true;
     }
+
+    
 }

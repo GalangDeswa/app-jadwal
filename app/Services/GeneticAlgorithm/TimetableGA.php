@@ -201,12 +201,19 @@ class TimetableGA
     public function run()
     {
         try {
-            $maxGenerations = 20;
+            $maxGenerations = 150;
 
             $timetable = $this->initializeTimetable();
 
-            $algorithm = new GeneticAlgorithm(100, 0.01, 0.9, 2, 10);
+          // $algorithm = new GeneticAlgorithm(150, 0.01, 0.9, 2, 10);
           // $algorithm = new GeneticAlgorithm(200, 0.05, 0.8, 5, 10);
+
+            // v2
+        $algorithm = new GeneticAlgorithm(250, 0.03, 0.8, 7, 10);
+            //v3
+      // $algorithm = new GeneticAlgorithm(200, 0.05, 0.9, 5, 5);
+            //v4
+         //$algorithm = new GeneticAlgorithm(100, 0.09, 0.9, 2, 10);
 
             $population = $algorithm->initPopulation($timetable);
 

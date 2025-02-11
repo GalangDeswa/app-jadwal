@@ -62,6 +62,7 @@ class TimetableRenderer
                                         <td><strong>PUKUL</strong></td>
                                         <td><strong>RUANG</strong></td>
                                         <td><strong>MATA KULIAH</strong></td>
+                                        <td><strong>TOTAL SKS</strong></td>
                                         <td><strong>NAMA DOSEN</strong></td>
                                     </tr>
                                 </thead>
@@ -85,6 +86,7 @@ class TimetableRenderer
                         $slotData = $data[$class->id][$day->name][$timeslot->time];
                         $courseCode = $slotData['course_code'];
                         $courseName = $slotData['course_name'];
+                        $credit = $slotData['credit'];
                         $professor = $slotData['professor'];
                         $room = $slotData['room'];
 
@@ -94,6 +96,7 @@ class TimetableRenderer
                             <td id='waktu'>{$timeslot->time}</td>
                             <td id='ruang'>{$room}</td>
                             <td id='matkul'><strong>{$courseName}</strong></td>
+                            <td id='sks'>{$credit}</td>
                             <td id='dosen'>{$professor}</td>
                         </tr>";
 
@@ -184,6 +187,8 @@ class TimetableRenderer
             $data[$groupId][$day->name][$timeslot->time]['course_name'] = $course->name;
             $data[$groupId][$day->name][$timeslot->time]['room'] = $room->name;
             $data[$groupId][$day->name][$timeslot->time]['professor'] = $professor->name;
+            $data[$groupId][$day->name][$timeslot->time]['credit'] = $course->credit;
+            
 
             $schemeIndex++;
             $chromosomeIndex += 3;

@@ -67,19 +67,26 @@ class ProfessorsController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'name' => 'required'
+            'name' => 'required|max:30',
+            'email' => 'required|email|max:30',
         ];
 
         if ($request->has('email') && $request->email) {
             $rules['email'] = 'email';
         }
 
-        $this->validate($request, $rules);
+         $messages = [
+         'name.max' => 'maximal karakter nama 30.',
+         'email.max'=>'maximal karakter email 30'
+        
+         ];
+
+        $this->validate($request, $rules,$messages);
 
         $professor = $this->service->store($request->all());
 
         if ($professor) {
-            return response()->json(['message' => 'Professor added'], 200);
+            return response()->json(['message' => 'dosen ditambah'], 200);
         } else {
             return response()->json(['error' => 'An unknown system error occurred'], 500);
         }
@@ -98,7 +105,7 @@ class ProfessorsController extends Controller
         if ($professor) {
             return response()->json($professor, 200);
         } else {
-            return response()->json(['errors' => ['Professor not found']], 404);
+            return response()->json(['errors' => ['tidak ditemukan']], 404);
         }
     }
 
@@ -113,22 +120,30 @@ class ProfessorsController extends Controller
         $professor = Professor::find($id);
 
         if (!$professor) {
-            return response()->json(['errors' => ['Professor does not exist']], 404);
+            return response()->json(['errors' => ['tidak ditemukan']], 404);
         }
 
         $rules = [
-            'name' => 'required',
+            'name' => 'required|max:30',
+             'email' => 'required|email|max:30',
         ];
+        
 
         if ($request->has('email') && $request->email) {
             $rules['email'] = 'email';
         }
 
-        $this->validate($request, $rules);
+         $messages = [
+         'name.max' => 'maximal karakter nama 30.',
+         'email.max'=>'maximal karakter email 30'
+
+         ];
+
+        $this->validate($request, $rules,$messages);
 
         $professor = $this->service->update($id, $request->all());
 
-        return response()->json(['message' => 'Professor updated'], 200);
+        return response()->json(['message' => 'dosen diupdate'], 200);
     }
 
 
@@ -142,11 +157,11 @@ class ProfessorsController extends Controller
         $professor = Professor::find($id);
 
         if (!$professor) {
-            return response()->json(['error' => 'Professor not found'], 404);
+            return response()->json(['error' => 'tidak ditemukan'], 404);
         }
 
         if ($this->service->delete($id)) {
-            return response()->json(['message' => 'Professor has been deleted'], 200);
+            return response()->json(['message' => 'dosen dihapus'], 200);
         } else {
             return response()->json(['error' => 'An unknown system error occurred'], 500);
         }

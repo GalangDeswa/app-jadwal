@@ -36,6 +36,8 @@
                                 class="btn btn-sm btn-primary print-btn" data-id="{{ $timetable->id }}">
                                 <span class="fa fa-print"></span> PRINT
                             </a>
+                            @if (Auth::user()->lvl == 'dosen')
+                            @else
                             <form action="{{ route('timetables.destroy', $timetable->id) }}" method="POST"
                                 style="display:inline;"
                                 onsubmit="return confirm('Are you sure you want to delete this timetable?');">
@@ -46,6 +48,8 @@
                                     <span class="fa fa-trash"></span> DELETE
                                 </button>
                             </form>
+                            @endif
+
                         </div>
                         @else
                         N/A

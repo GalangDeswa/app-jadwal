@@ -58,8 +58,8 @@ class CoursesController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'name' => 'required',
-            'course_code' => 'required|unique:courses,course_code',
+            'name' => 'required|max:30',
+            'course_code' => 'required|unique:courses,course_code|max:15',
             'credit' => 'required',
             'course_type' => 'required|string|in:reguler,lab-kes,lab-kom,lab-far,magang,KKN', // Validate course type
         ];
@@ -71,6 +71,8 @@ class CoursesController extends Controller
             'course_code.required' => 'Kolom Kode mata kuliah harus diisi.',
             'credit.required' => 'Kolom kredit harus diisi.',
             'course_type.required' => 'Kolom jenis mata kuliah harus diisi.',
+            'name.max'=>'maximal karakter mata kuliah 30',
+            'course_code.max'=>'maximal karakter kode 15',
         ];
 
         $this->validate($request, $rules, $messages);
@@ -78,7 +80,7 @@ class CoursesController extends Controller
         $course = $this->service->store($request->all());
 
         if ($course) {
-            return response()->json(['message' => 'Course added'], 200);
+            return response()->json(['message' => 'mata kuliah ditambah'], 200);
         } else {
             return response()->json(['error' => 'A system error occurred'], 500);
         }
@@ -97,7 +99,7 @@ class CoursesController extends Controller
         if ($course) {
             return response()->json($course, 200);
         } else {
-            return response()->json(['error' => 'Course not found'], 404);
+            return response()->json(['error' => 'tidak ditemukan'], 404);
         }
     }
 
@@ -110,12 +112,14 @@ class CoursesController extends Controller
     public function update($id, Request $request)
     {
         $rules = [
-            'name' => 'required',
-            'course_code' => 'required|unique:courses,course_code,' . $id
+            'name' => 'required|max:30',
+            'course_code' => 'required|max:15|unique:courses,course_code,' . $id
         ];
 
         $messages = [
-            'name.unique' => 'This course already exists'
+            'name.unique' => 'This course already exists',
+                 'name.max'=>'maximal karakter mata kuliah 30',
+                 'course_code.max'=>'maximal karakter kode 15',
         ];
 
         $this->validate($request, $rules, $messages);
@@ -123,12 +127,12 @@ class CoursesController extends Controller
         $course = $this->service->show($id);
 
         if (!$course) {
-            return response()->json(['error' => 'Course not found'], 404);
+            return response()->json(['error' => 'tidak ditemukan'], 404);
         }
 
         $course = $this->service->update($id, $request->all());
 
-        return response()->json(['message' => 'Course updated'], 200);
+        return response()->json(['message' => 'mata kuliah diupdate'], 200);
     }
 
     /**
@@ -141,13 +145,13 @@ class CoursesController extends Controller
         $course = Course::find($id);
 
         if (!$course) {
-            return response()->json(['error' => 'Course not found'], 404);
+            return response()->json(['error' => 'tidak ditemukan'], 404);
         }
 
         if ($this->service->delete($id)) {
-            return response()->json(['message' => 'Course has been deleted'], 200);
+            return response()->json(['message' => 'mata kuliah dihapus'], 200);
         } else {
-            return response()->json(['error' => 'An unknown system error occurred'], 500);
+            return response()->json(['error' => 'Error'], 500);
         }
     }
 }

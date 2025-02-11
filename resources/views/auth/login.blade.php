@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Login Form</title>
+        <title>Login</title>
         <style>
             body {
                 margin: 0;
@@ -143,10 +143,10 @@
                             <div class="form-group">
                                 <input type="submit" name="submit" value="SIGN IN" class="btn btn-custom">
                             </div>
-                            <div class="form-group">
+                            {{-- <div class="form-group">
                                 <input type="button" value="Register" class="btn btn-custom"
                                     onclick="window.location.href='/register';">
-                            </div>
+                            </div> --}}
                         </form>
                     </div>
                 </div>
